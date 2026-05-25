@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>PhotoQ — โรงพยาบาลวังน้ำเย็น</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+[data-theme="dark"]{
+  --bg:#0d0f14;--surface:#13161d;--elevated:#1a1e28;--hover:#222736;
+  --glass:rgba(26,30,40,.85);--border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.15);
+  --tx:#f0f2f8;--tx2:#8b91a8;--tx3:#4e5568;
+  --blue:#4f8ef7;--blue-lt:rgba(79,142,247,.12);--blue-glow:rgba(79,142,247,.3);
+  --green:#34d399;--green-lt:rgba(52,211,153,.12);
+  --red:#f87171;--red-lt:rgba(248,113,113,.12);
+  --amber:#fbbf24;--amber-lt:rgba(251,191,36,.12);
+  --purple:#a78bfa;--purple-lt:rgba(167,139,250,.12);
+  --hgrad:linear-gradient(135deg,#0d0f14 0%,#131928 50%,#0d1220 100%);
+  --shadow:0 20px 60px rgba(0,0,0,.6);--shadow-sm:0 2px 8px rgba(0,0,0,.4);
+}
+[data-theme="light"]{
+  --bg:#f0f2f8;--surface:#fff;--elevated:#f8f9fc;--hover:#eef0f7;
+  --glass:rgba(255,255,255,.9);--border:rgba(0,0,0,.08);--border2:rgba(0,0,0,.15);
+  --tx:#111827;--tx2:#6b7280;--tx3:#9ca3af;
+  --blue:#2563eb;--blue-lt:rgba(37,99,235,.08);--blue-glow:rgba(37,99,235,.2);
+  --green:#059669;--green-lt:rgba(5,150,105,.08);
+  --red:#dc2626;--red-lt:rgba(220,38,38,.08);
+  --amber:#d97706;--amber-lt:rgba(217,119,6,.08);
+  --purple:#7c3aed;--purple-lt:rgba(124,58,237,.08);
+  --hgrad:linear-gradient(135deg,#1e3a8a 0%,#2563eb 50%,#1d4ed8 100%);
+  --shadow:0 20px 60px rgba(0,0,0,.15);--shadow-sm:0 2px 8px rgba(0,0,0,.08);
+}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;font-size:15px;transition:background .3s,color .3s;}
+.screen{display:none!important;min-height:100vh;}
+.screen.active{display:block!important;}
+#screen-login.active{display:flex!important;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+#screen-app.active{display:flex!important;flex-direction:column;}
+/* LOGIN */
+.login-bg{position:absolute;inset:0;background:var(--hgrad);}
+.login-bg::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 20% 30%,rgba(79,142,247,.15) 0%,transparent 70%),radial-gradient(ellipse 40% 60% at 80% 70%,rgba(52,211,153,.08) 0%,transparent 60%);}
+.orb{position:absolute;border-radius:50%;filter:blur(60px);opacity:.3;animation:float 6s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-20px);}}
+.login-card{position:relative;z-index:1;background:var(--glass);backdrop-filter:blur(20px);border:1px solid var(--border2);border-radius:24px;padding:48px 44px;width:100%;max-width:420px;box-shadow:var(--shadow);}
+.login-icon{width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,#4f8ef7,#34d399);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 16px;box-shadow:0 8px 24px rgba(79,142,247,.4);}
+.login-title{font-family:'Chakra Petch',sans-serif;font-size:28px;font-weight:700;text-align:center;letter-spacing:2px;}
+.login-sub{font-size:13px;color:var(--tx2);text-align:center;margin-top:6px;}
+.login-line{width:40px;height:2px;background:linear-gradient(90deg,#4f8ef7,#34d399);margin:12px auto 28px;border-radius:2px;}
+/* FORM */
+.fg{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+.fg label{font-size:12px;font-weight:600;color:var(--tx2);letter-spacing:.5px;text-transform:uppercase;}
+.req{color:var(--red);}
+input,select,textarea{font-family:'Sarabun',sans-serif;font-size:14px;padding:12px 16px;border:1.5px solid var(--border);border-radius:12px;background:var(--elevated);color:var(--tx);width:100%;transition:all .2s;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-glow);}
+select option{background:var(--elevated);color:var(--tx);}
+textarea{resize:vertical;min-height:80px;}
+.fg.full{grid-column:1/-1;}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:'Sarabun',sans-serif;font-size:14px;font-weight:600;padding:12px 22px;border-radius:12px;border:none;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:linear-gradient(135deg,#4f8ef7,#2563eb);color:#fff;box-shadow:0 4px 16px rgba(79,142,247,.4);}
+.btn-primary:hover{box-shadow:0 6px 24px rgba(79,142,247,.6);transform:translateY(-1px);}
+.btn-primary:disabled{background:var(--tx3);box-shadow:none;cursor:not-allowed;transform:none;}
+.btn-block{width:100%;}
+.btn-sm{padding:7px 14px;font-size:13px;border-radius:9px;}
+.btn-danger{background:var(--red-lt);color:var(--red);border:1px solid rgba(248,113,113,.2);}.btn-danger:hover{background:var(--red);color:#fff;}
+.btn-warning{background:var(--amber-lt);color:var(--amber);border:1px solid rgba(251,191,36,.2);}.btn-warning:hover{background:var(--amber);color:#000;}
+.btn-success{background:var(--green-lt);color:var(--green);border:1px solid rgba(52,211,153,.2);}.btn-success:hover{background:var(--green);color:#000;}
+.btn-outline{background:transparent;color:var(--tx2);border:1.5px solid var(--border);}.btn-outline:hover{background:var(--hover);color:var(--tx);}
+.btn-purple{background:var(--purple-lt);color:var(--purple);border:1px solid rgba(167,139,250,.2);}.btn-purple:hover{background:var(--purple);color:#fff;}
+/* HEADER */
+.app-header{background:var(--hgrad);position:relative;overflow:visible;border-bottom:1px solid var(--border);}
+.header-glow{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 50% 100% at 0% 50%,rgba(79,142,247,.12) 0%,transparent 60%);}
+.header-inner{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 32px;display:flex;align-items:center;gap:20px;height:72px;}
+.hlogo{display:flex;align-items:center;gap:14px;flex-shrink:0;}
+.hlogo-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#4f8ef7,#34d399);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 12px rgba(79,142,247,.35);}
+.hlogo-text h1{font-family:'Chakra Petch',sans-serif;font-size:20px;font-weight:700;color:#fff;letter-spacing:2px;}
+.hlogo-text p{font-size:11px;color:rgba(255,255,255,.5);margin-top:2px;}
+.hnav{display:flex;align-items:center;gap:4px;flex:1;justify-content:center;}
+.nav-btn{display:flex;align-items:center;gap:9px;padding:11px 22px;border-radius:12px;font-family:'Sarabun',sans-serif;font-size:16px;font-weight:500;color:rgba(255,255,255,.6);border:none;background:transparent;cursor:pointer;transition:all .2s;position:relative;}
+.nav-btn .ni{font-size:20px;}
+.nav-btn:hover{color:rgba(255,255,255,.9);background:rgba(255,255,255,.08);}
+.nav-btn.active{color:#fff;background:rgba(255,255,255,.12);font-weight:600;}
+.nav-btn.active::after{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:24px;height:2px;background:linear-gradient(90deg,#4f8ef7,#34d399);border-radius:2px;}
+.nav-btn.nav-admin{color:rgba(251,191,36,.7);}.nav-btn.nav-admin:hover{color:var(--amber);background:rgba(251,191,36,.08);}
+.nav-btn.nav-admin.active{color:var(--amber);background:rgba(251,191,36,.1);}.nav-btn.nav-admin.active::after{background:var(--amber);}
+.hright{display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.theme-btn{width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.7);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.theme-btn:hover{background:rgba(255,255,255,.15);color:#fff;}
+.uchip{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:7px 14px 7px 9px;cursor:pointer;transition:all .2s;position:relative;}
+.uchip:hover{background:rgba(255,255,255,.14);}
+.uav{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#4f8ef7,#34d399);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;}
+.udrop{position:fixed;background:var(--surface);border:1px solid var(--border2);border-radius:14px;box-shadow:var(--shadow);min-width:220px;z-index:9999;display:none;overflow:hidden;padding:8px;}
+.udrop.open{display:block;animation:dropIn .15s ease;}
+@keyframes dropIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+.udrop-info{padding:12px 12px 10px;border-bottom:1px solid var(--border);margin-bottom:4px;}
+.udrop-name{font-size:14px;font-weight:600;}
+.udrop-dept{font-size:12px;color:var(--tx2);margin-top:3px;}
+.ditem{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;font-size:14px;color:var(--tx2);cursor:pointer;transition:all .15s;}
+.ditem:hover{background:var(--hover);color:var(--tx);}
+.ditem.danger{color:var(--red);}.ditem.danger:hover{background:var(--red-lt);}
+/* CONTENT */
+.content{flex:1;padding:32px;max-width:1200px;margin:0 auto;width:100%;}
+.page{display:none;animation:fadeUp .25s ease;}
+.page.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.ptitle{font-family:'Chakra Petch',sans-serif;font-size:22px;font-weight:600;margin-bottom:24px;display:flex;align-items:center;gap:10px;}
+.ptitle span{font-size:13px;font-weight:400;font-family:'Sarabun',sans-serif;color:var(--tx2);}
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;box-shadow:var(--shadow-sm);margin-bottom:20px;transition:background .3s,border .3s;}
+.ctitle{font-size:13px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+.cbar{width:3px;height:16px;background:linear-gradient(180deg,#4f8ef7,#34d399);border-radius:2px;flex-shrink:0;}
+/* ALERT */
+.alert{border-radius:12px;padding:12px 16px;font-size:14px;border:1px solid;display:none;}
+.alert.success{background:var(--green-lt);color:var(--green);border-color:rgba(52,211,153,.25);}
+.alert.error{background:var(--red-lt);color:var(--red);border-color:rgba(248,113,113,.25);}
+.alert.info{background:var(--blue-lt);color:var(--blue);border-color:rgba(79,142,247,.25);}
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;align-items:center;gap:16px;transition:border-color .2s;}
+.stat-card:hover{border-color:var(--blue);}
+.stat-card.done-card{border-color:var(--green);}
+.sicon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.sicon.blue{background:var(--blue-lt);}.sicon.green{background:var(--green-lt);}.sicon.amber{background:var(--amber-lt);}.sicon.purple{background:var(--purple-lt);}
+.slabel{font-size:12px;color:var(--tx2);margin-bottom:4px;font-weight:500;}
+.sval{font-family:'Chakra Petch',sans-serif;font-size:28px;font-weight:700;line-height:1;}
+/* CHART ROW */
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;}
+.chart-title{font-size:13px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:16px;}
+/* CALENDAR */
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.cal-month{font-size:15px;font-weight:600;}
+.cal-nav{display:flex;gap:6px;}
+.cal-nav button{width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--tx2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
+.cal-nav button:hover{background:var(--hover);color:var(--tx);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+.cal-day-name{font-size:11px;color:var(--tx3);font-weight:600;letter-spacing:.5px;text-align:center;padding:4px 0;}
+.day-cell{border:1px solid var(--border);border-radius:12px;padding:10px 4px;text-align:center;cursor:pointer;transition:all .2s;min-height:62px;display:flex;flex-direction:column;align-items:center;}
+.day-cell:hover{background:var(--hover);border-color:var(--blue);}
+.day-cell.has-event{border-color:var(--blue);background:var(--blue-lt);}
+.day-cell.today{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue-glow);}
+.day-cell.today .dc-num{color:var(--blue);font-weight:700;}
+.day-cell.other-month{opacity:.3;}
+.dc-num{font-size:16px;font-weight:600;margin-bottom:4px;}
+.dc-dots{display:flex;justify-content:center;gap:2px;flex-wrap:wrap;min-height:8px;}
+.dc-dot{width:5px;height:5px;border-radius:50%;background:var(--blue);}
+.dc-dot.done{background:var(--green);}
+/* BOOKING LIST */
+.filter-row{display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap;}
+.filter-row input,.filter-row select{max-width:180px;}
+.booking-item{display:flex;align-items:flex-start;gap:16px;padding:16px;border-radius:14px;border:1px solid var(--border);margin-bottom:8px;background:var(--elevated);cursor:pointer;transition:all .2s;}
+.booking-item:hover{border-color:var(--blue);background:var(--hover);}
+.booking-item.done-item{opacity:.65;}
+.booking-item.done-item:hover{opacity:1;}
+.date-badge{background:var(--blue-lt);border:1px solid rgba(79,142,247,.2);color:var(--blue);border-radius:12px;padding:10px 12px;text-align:center;min-width:60px;flex-shrink:0;}
+.date-badge.done-badge{background:var(--green-lt);border-color:rgba(52,211,153,.2);color:var(--green);}
+.db-day{font-family:'Chakra Petch',sans-serif;font-size:22px;font-weight:700;line-height:1;}
+.db-month{font-size:12px;margin-top:3px;white-space:nowrap;}
+.bk-name{font-size:15px;font-weight:600;}
+.bk-booked{font-size:11px;color:var(--tx3);margin-top:2px;}
+.bk-meta{font-size:13px;color:var(--tx2);margin-top:5px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.bk-note{font-size:12px;color:var(--tx3);margin-top:6px;font-style:italic;}
+.tag{display:inline-flex;align-items:center;font-size:11px;border-radius:6px;padding:3px 10px;font-weight:600;gap:4px;}
+.tag-dept{background:var(--hover);color:var(--tx2);}
+.tag-type{background:var(--blue-lt);color:var(--blue);}
+.tag-loc{background:var(--amber-lt);color:var(--amber);}
+.tag-ok{background:var(--green-lt);color:var(--green);}
+.tag-wait{background:var(--amber-lt);color:var(--amber);}
+.tag-hint{font-size:11px;color:var(--blue);margin-left:4px;}
+/* USER TABLE */
+.data-table{width:100%;border-collapse:separate;border-spacing:0 6px;}
+.data-table th{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--tx3);padding:0 14px 8px;text-align:left;}
+.data-table td{padding:14px;background:var(--elevated);font-size:14px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.data-table td:first-child{border-left:1px solid var(--border);border-radius:12px 0 0 12px;padding-left:18px;}
+.data-table td:last-child{border-right:1px solid var(--border);border-radius:0 12px 12px 0;}
+.data-table tr:hover td{background:var(--hover);}
+.rbadge{display:inline-flex;font-size:11px;font-weight:700;border-radius:6px;padding:3px 10px;}
+.rbadge.admin{background:var(--red-lt);color:var(--red);}
+.rbadge.user{background:var(--blue-lt);color:var(--blue);}
+/* SUMMARY CHIPS */
+.summary-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;}
+.schip{background:var(--elevated);border:1px solid var(--border);border-radius:12px;padding:12px 18px;display:flex;align-items:center;gap:10px;font-size:14px;}
+.schip-num{font-family:'Chakra Petch',sans-serif;font-size:20px;font-weight:700;color:var(--blue);}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:9998;padding:16px;}
+.modal-overlay.open{display:flex;animation:fadeIn .2s ease;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:32px;width:100%;max-width:500px;box-shadow:var(--shadow);max-height:90vh;overflow-y:auto;animation:scaleIn .2s ease;}
+@keyframes scaleIn{from{transform:scale(.95);}to{transform:scale(1);}}
+.modal-title{font-family:'Chakra Petch',sans-serif;font-size:18px;font-weight:600;margin-bottom:24px;}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:24px;}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0;}
+.detail-box{padding:12px;background:var(--elevated);border-radius:12px;border:1px solid var(--border);}
+.detail-box-label{font-size:11px;color:var(--tx3);font-weight:600;margin-bottom:4px;}
+.detail-box-value{font-size:14px;font-weight:600;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.empty-state{text-align:center;padding:48px 0;color:var(--tx3);font-size:14px;}
+.empty-icon{font-size:40px;margin-bottom:12px;opacity:.5;}
+.loading{text-align:center;padding:32px;color:var(--tx3);font-size:14px;}
+
+/* ===== AVATAR PICKER ===== */
+.av-tab{flex:1;padding:9px 12px;border-radius:10px;font-family:'Sarabun',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;background:transparent;color:rgba(255,255,255,.5);transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;}
+.av-tab:hover{color:rgba(255,255,255,.8);}
+.av-tab.active{background:rgba(255,255,255,.12);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+.av-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;}
+.av-item{aspect-ratio:1;border-radius:12px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;transition:all .18s;background:var(--elevated);position:relative;overflow:hidden;}
+.av-item:hover{border-color:var(--blue);transform:scale(1.1);z-index:2;box-shadow:0 4px 16px rgba(79,142,247,.4);}
+.av-item.av-selected{border-color:var(--blue);background:var(--blue-lt);box-shadow:0 0 0 3px var(--blue-glow),0 4px 16px rgba(79,142,247,.4);transform:scale(1.08);z-index:3;}
+.av-item.av-selected::after{content:"✓";position:absolute;top:2px;right:4px;font-size:10px;color:var(--blue);font-weight:800;line-height:1;}
+::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+@media(max-width:768px){.header-inner{padding:0 16px;height:64px;}.hnav{display:none;}.content{padding:20px 16px;}.form-grid,.stats-grid,.chart-row{grid-template-columns:1fr;}.cal-grid{gap:3px;}}
+</style>
+</head>
+<body>
+<!-- LOGIN -->
+<div id="screen-login" class="screen active">
+  <div class="login-bg"></div>
+  <div class="orb" style="width:300px;height:300px;background:#4f8ef7;top:-80px;right:10%;"></div>
+  <div class="orb" style="width:200px;height:200px;background:#34d399;bottom:10%;left:5%;animation-delay:2s;"></div>
+  <di  <div class="login-card">
+    <div class="login-icon">📸</div>
+    <div class="login-title">PhotoQ</div>
+    <div class="login-sub">ระบบจองคิวถ่ายรูป โรงพยาบาลวังน้ำเย็น</div>
+    <div class="login-line"></div>
+    <div class="fg"><label>ชื่อผู้ใช้</label><input type="text" id="l-user" placeholder="username" autocomplete="username"/></div>
+    <div class="fg"><label>รหัสผ่าน</label><input type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <button class="btn btn-primary btn-block" id="loginBtn" onclick="doLogin()">เข้าสู่ระบบ</button>
+    <div class="alert error" id="loginErr" style="margin-top:12px;"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="screen-app" class="screen">
+  <header class="app-header">
+    <div class="header-glow"></div>
+    <div class="header-inner">
+      <div class="hlogo">
+        <div class="hlogo-icon">📸</div>
+        <div class="hlogo-text"><h1>PhotoQ</h1><p>โรงพยาบาลวังน้ำเย็น</p></div>
+      </div>
+      <nav class="hnav" id="headerNav"></nav>
+      <div class="hright">
+        <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
+        <div class="uchip" onclick="toggleDrop(event)">
+          <div class="uav" id="uAvatar" style="display:flex;align-items:center;justify-content:center;font-size:18px;overflow:hidden;">U</div>
+          <span id="uName" style="font-size:13px;font-weight:500;color:rgba(255,255,255,.85);">User</span>
+          <span style="color:rgba(255,255,255,.4);font-size:11px;">▾</span>
+          <div class="udrop" id="udrop">
+            <div class="udrop-info"><div class="udrop-name" id="ddName">—</div><div class="udrop-dept" id="ddDept">—</div></div>
+            <div class="ditem" onclick="openChangeAvatar()">🖼️ เปลี่ยน Avatar</div>
+            <div class="ditem" onclick="openChangePwd()">🔑 เปลี่ยนรหัสผ่าน</div>
+            <div class="ditem danger" onclick="doLogout()">🚪 ออกจากระบบ</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main style="flex:1;background:var(--bg);">
+    <div class="content">
+
+      <!-- PAGE: จองคิว (user + admin share) -->
+      <div id="page-book" class="page">
+        <div class="ptitle">📅 จองคิวถ่ายรูป</div>
+        <div class="card">
+          <div class="ctitle"><div class="cbar"></div>ข้อมูลการจอง</div>
+          <div class="alert info" id="bookInfo" style="margin-bottom:16px;display:block;"></div>
+          <div class="form-grid">
+            <div class="fg"><label>วันที่ <span class="req">*</span></label><input type="date" id="f-date" onchange="loadDateBookings()"/></div>
+            <div class="fg">
+              <label>ช่วงเวลาที่ต้องการ <span class="req">*</span></label>
+              <select id="f-time">
+                <option value="">— เลือกช่วงเวลา —</option>
+                <option value="08:30">08:30 - 12:00 น. (เช้า)</option>
+                <option value="13:00">13:00 - 16:00 น. (บ่าย)</option>
+                <option value="08:30-full">08:30 - 16:00 น. (เต็มวัน)</option>
+              </select>
+            </div>
+            <div class="fg"><label>ประเภทการถ่ายรูป <span class="req">*</span></label>
+              <select id="f-type"><option value="">— เลือกประเภท —</option><option>บัตรประจำตัวพนักงาน</option><option>สื่อประชาสัมพันธ์</option><option>งานอีเวนต์ / กิจกรรม</option><option>ประชุม / สัมมนา</option><option>อื่น ๆ</option></select>
+            </div>
+            <div class="fg"><label>สถานที่</label>
+              <select id="f-loc" onchange="toggleOtherLoc('f-loc','f-loc-other-wrap')">
+                <option value="">— เลือกสถานที่ —</option>
+                <option>ห้องประชุมประจักษ์พร (ชั้น 3)</option>
+                <option>ห้องหัวหน้ากลุ่มงานบริหารทั่วไป (ชั่วคราว) ชั้น 3</option>
+                <option>ห้องประชุมประสิทธิ์เทวา (ชั้น 4 ติดลิฟท์)</option>
+                <option>ห้องประชุมเทพารักษ์ (ชั้น 4 ห้องกลาง)</option>
+                <option>ห้องประชุมพรหมสถิต (ชั้น 4 ห้องใหญ่)</option>
+                <option>ห้องประชุมสุขสถิตย์</option>
+                <option>ห้องประชุมประสิทธิ์ธรรม</option>
+                <option value="other">สถานที่อื่นๆ (ระบุเพิ่ม)</option>
+              </select>
+            </div>
+            <div class="fg full" id="f-loc-other-wrap" style="display:none;"><label>ระบุสถานที่ <span class="req">*</span></label><input type="text" id="f-loc-other" placeholder="กรอกสถานที่..."/></div>
+            <div class="fg full"><label>หมายเหตุ</label><textarea id="f-note" placeholder="เช่น จำนวนคน ชุดที่ต้องการ ฯลฯ"></textarea></div>
+          </div>
+          <!-- รายการจองในวันที่เลือก -->
+          <div id="date-bookings-wrap" style="display:none;margin:16px 0;">
+            <div style="font-size:13px;font-weight:600;color:var(--tx2);margin-bottom:10px;">📋 รายการจองในวันนี้ (เพื่อป้องกันเวลาทับซ้อน)</div>
+            <div id="date-bookings-list"></div>
+          </div>
+          <button class="btn btn-primary btn-block" id="bookBtn" onclick="submitBooking()" style="margin-top:8px;">✓ ยืนยันการจอง</button>
+          <div class="alert success" id="bookOk" style="margin-top:12px;"></div>
+          <div class="alert error" id="bookErr" style="margin-top:12px;"></div>
+        </div>
+      </div>
+
+      <!-- PAGE: รายการของฉัน -->
+      <div id="page-mybook" class="page">
+        <div class="ptitle">📋 รายการที่ฉันจอง</div>
+        <div class="card"><div class="ctitle"><div class="cbar"></div>ประวัติการจองของคุณ</div><div id="myBookList"><div class="loading">กำลังโหลด...</div></div></div>
+      </div>
+
+      <!-- PAGE: Dashboard (admin) -->
+      <div id="page-dash" class="page">
+        <div class="ptitle">📊 Dashboard <span>ภาพรวมการจอง</span></div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="sicon blue">📅</div><div><div class="slabel">สัปดาห์นี้</div><div class="sval" id="s-week">—</div></div></div>
+          <div class="stat-card"><div class="sicon green">🗓️</div><div><div class="slabel">เดือนนี้</div><div class="sval" id="s-month">—</div></div></div>
+          <div class="stat-card"><div class="sicon amber">⏳</div><div><div class="slabel">รอดำเนินการ</div><div class="sval" id="s-pending">—</div></div></div>
+          <div class="stat-card done-card" onclick="showDoneOnly()" style="cursor:pointer;" title="คลิกเพื่อดูรายการเสร็จสิ้น"><div class="sicon green">✅</div><div><div class="slabel">เสร็จสิ้นแล้ว</div><div class="sval" id="s-done">—</div><div style="font-size:11px;color:var(--green);margin-top:2px;">คลิกเพื่อดู ›</div></div></div>
+        </div>
+        <div class="chart-row">
+          <div class="chart-card"><div class="chart-title">📈 รายการจองรายเดือน</div><canvas id="chartMonthly" height="200"></canvas></div>
+          <div class="chart-card"><div class="chart-title">📷 ประเภทการถ่ายรูป</div><canvas id="chartType" height="200"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="ctitle"><div class="cbar"></div>ปฏิทิน</div>
+          <div class="cal-header">
+            <div class="cal-month" id="calMonthLabel">—</div>
+            <div class="cal-nav"><button onclick="calMove(-1)">‹</button><button onclick="calMove(1)">›</button></div>
+          </div>
+          <div class="cal-grid" id="calGrid"></div>
+        </div>
+        <div class="card">
+          <div class="ctitle" style="justify-content:space-between;align-items:center;">
+            <div style="display:flex;align-items:center;gap:8px;"><div class="cbar"></div>รายการจองทั้งหมด</div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-outline btn-sm" id="filterToggle" onclick="toggleDoneFilter()">แสดงทั้งหมด</button>
+              <button class="btn btn-outline btn-sm" onclick="loadBookings()">↺ รีเฟรช</button>
+            </div>
+          </div>
+          <div class="filter-row">
+            <input type="text" id="srch" placeholder="🔍 ค้นหา..." oninput="renderList()" style="max-width:200px;"/>
+            <input type="date" id="fDate" onchange="renderList()"/>
+            <select id="fType" onchange="renderList()"><option value="">ทุกประเภท</option><option>บัตรประจำตัวพนักงาน</option><option>สื่อประชาสัมพันธ์</option><option>งานอีเวนต์ / กิจกรรม</option><option>ประชุม / สัมมนา</option><option>อื่น ๆ</option></select>
+          </div>
+          <div id="bookingList"><div class="loading">กำลังโหลด...</div></div>
+        </div>
+      </div>
+
+      <!-- PAGE: จัดการ User (admin) -->
+      <div id="page-users" class="page">
+        <div class="ptitle">👥 จัดการผู้ใช้งาน</div>
+        <div class="summary-row" id="userSummary"></div>
+        <div class="card">
+          <div class="ctitle" style="justify-content:space-between;align-items:center;">
+            <div style="display:flex;align-items:center;gap:8px;"><div class="cbar"></div>รายชื่อผู้ใช้ทั้งหมด</div>
+            <button class="btn btn-success btn-sm" onclick="openAddUser()">+ เพิ่มผู้ใช้</button>
+          </div>
+          <div id="userTableWrap"><div class="loading">กำลังโหลด...</div></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- MODAL: Register -->
+<div class="modal-overlay" id="modalRegister">
+  <div class="modal" style="max-width:460px;">
+    <div class="modal-title">📝 สมัครบัญชีใหม่</div>
+    <div style="font-size:13px;color:var(--tx2);margin-bottom:20px;background:var(--blue-lt);border:1px solid rgba(79,142,247,.2);border-radius:10px;padding:10px 14px;">
+      สำหรับเจ้าหน้าที่โรงพยาบาลวังน้ำเย็นเท่านั้น
+    </div>
+    <div class="form-grid">
+      <div class="fg full">
+        <label>ชื่อ-นามสกุล <span class="req">*</span></label>
+        <input type="text" id="reg-name" placeholder="เช่น นายสมชาย ใจดี"/>
+      </div>
+      <div class="fg full">
+        <label>กลุ่มงาน <span class="req">*</span></label>
+        <select id="reg-dept">
+          <option value="">— เลือกกลุ่มงาน —</option>
+          <option>กลุ่มงานการพยาบาล</option>
+          <option>กลุ่มงานการแพทย์</option>
+          <option>กลุ่มงานทันตกรรม</option>
+          <option>กลุ่มงานจิตเวชและยาเสพติด</option>
+          <option>กลุ่มงานบริการด้านปฐมภูมิและองค์รวม</option>
+          <option>กลุ่มงานบริหารทั่วไป</option>
+          <option>กลุ่มงานประกันสุขภาพยุทธศาสตร์</option>
+          <option>กลุ่มงานแพทย์แผนไทยและแพทย์ทางเลือก</option>
+          <option>กลุ่มงานแพทย์แผนไทยและแพทย์ทางเลือก รายคาบ</option>
+          <option>กลุ่มงานเภสัชกรรมและคุ้มครองผู้บริโภค</option>
+          <option>กลุ่มงานเทคนิคการแพทย์</option>
+          <option>กลุ่มงานเวชกรรมฟื้นฟู</option>
+          <option>กลุ่มงานสุขภาพดิจิทัล</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Username <span class="req">*</span></label>
+        <input type="text" id="reg-username" placeholder="ตัวอักษร a-z, 0-9, _" autocomplete="off"/>
+        <div style="font-size:11px;color:var(--tx3);margin-top:3px;">ใช้สำหรับเข้าสู่ระบบ</div>
+      </div>
+      <div class="fg">
+        <label>รหัสผ่าน <span class="req">*</span></label>
+        <input type="password" id="reg-password" placeholder="อย่างน้อย 4 ตัวอักษร"/>
+      </div>
+      <div class="fg full">
+        <label>ยืนยันรหัสผ่าน <span class="req">*</span></label>
+        <input type="password" id="reg-confirm" placeholder="กรอกรหัสผ่านอีกครั้ง"/>
+      </div>
+    </div>
+    <div class="alert error"   id="regErr" style="margin-top:12px;"></div>
+    <div class="alert success" id="regOk"  style="margin-top:12px;"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modalRegister');showLogin()">← กลับเข้าสู่ระบบ</button>
+      <button class="btn btn-primary" style="width:auto;" id="regBtn" onclick="doRegister()">สมัครบัญชี</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Detail / Edit -->
+<div class="modal-overlay" id="modalDetail">
+  <div class="modal">
+    <div class="modal-title" id="detailTitle">📋 รายละเอียดการจอง</div>
+    <div id="detailContent"></div>
+    <div id="editForm" style="display:none;">
+      <div class="form-grid" style="margin-top:16px;">
+        <div class="fg"><label>วันที่ <span class="req">*</span></label><input type="date" id="e-date"/></div>
+        <div class="fg"><label>ช่วงเวลา <span class="req">*</span></label>
+          <select id="e-time">
+            <option value="08:30">08:30 - 12:00 น. (เช้า)</option>
+            <option value="13:00">13:00 - 16:00 น. (บ่าย)</option>
+            <option value="08:30-full">08:30 - 16:00 น. (เต็มวัน)</option>
+          </select>
+        </div>
+        <div class="fg"><label>ประเภท</label>
+          <select id="e-type"><option>บัตรประจำตัวพนักงาน</option><option>สื่อประชาสัมพันธ์</option><option>งานอีเวนต์ / กิจกรรม</option><option>ประชุม / สัมมนา</option><option>อื่น ๆ</option></select>
+        </div>
+        <div class="fg"><label>สถานที่</label>
+          <select id="e-loc" onchange="toggleOtherLoc('e-loc','e-loc-other-wrap')">
+            <option value="">— เลือกสถานที่ —</option>
+            <option>ห้องประชุมประจักษ์พร (ชั้น 3)</option>
+            <option>ห้องหัวหน้ากลุ่มงานบริหารทั่วไป (ชั่วคราว) ชั้น 3</option>
+            <option>ห้องประชุมประสิทธิ์เทวา (ชั้น 4 ติดลิฟท์)</option>
+            <option>ห้องประชุมเทพารักษ์ (ชั้น 4 ห้องกลาง)</option>
+            <option>ห้องประชุมพรหมสถิต (ชั้น 4 ห้องใหญ่)</option>
+            <option>ห้องประชุมสุขสถิตย์</option>
+            <option>ห้องประชุมประสิทธิ์ธรรม</option>
+            <option value="other">สถานที่อื่นๆ</option>
+          </select>
+        </div>
+        <div class="fg full" id="e-loc-other-wrap" style="display:none;"><label>ระบุสถานที่</label><input type="text" id="e-loc-other"/></div>
+        <div class="fg full"><label>หมายเหตุ</label><textarea id="e-note"></textarea></div>
+      </div>
+      <div class="alert error" id="editErr" style="margin-top:10px;"></div>
+    </div>
+    <div class="modal-actions" id="detailActions"></div>
+  </div>
+</div>
+
+<!-- MODAL: Add/Edit User -->
+<div class="modal-overlay" id="modalUser">
+  <div class="modal">
+    <div class="modal-title" id="muTitle">เพิ่มผู้ใช้</div>
+    <input type="hidden" id="mu-mode" value="add"/>
+    <input type="hidden" id="mu-orig" value=""/>
+    <div class="fg" id="mu-uname-wrap"><label>Username <span class="req">*</span></label><input type="text" id="mu-username"/></div>
+    <div class="fg"><label>รหัสผ่าน</label><input type="password" id="mu-password" placeholder="ปล่อยว่าง = ไม่เปลี่ยน (กรณีแก้ไข)"/></div>
+    <div class="fg"><label>ชื่อ-นามสกุล <span class="req">*</span></label><input type="text" id="mu-name"/></div>
+    <div class="fg"><label>กลุ่มงาน <span class="req">*</span></label>
+      <select id="mu-dept"><option value="">— เลือกกลุ่มงาน —</option><option>กลุ่มงานการพยาบาล</option><option>กลุ่มงานการแพทย์</option><option>กลุ่มงานทันตกรรม</option><option>กลุ่มงานจิตเวชและยาเสพติด</option><option>กลุ่มงานบริการด้านปฐมภูมิและองค์รวม</option><option>กลุ่มงานบริหารทั่วไป</option><option>กลุ่มงานประกันสุขภาพยุทธศาสตร์</option><option>กลุ่มงานแพทย์แผนไทยและแพทย์ทางเลือก</option><option>กลุ่มงานแพทย์แผนไทยและแพทย์ทางเลือก รายคาบ</option><option>กลุ่มงานเภสัชกรรมและคุ้มครองผู้บริโภค</option><option>กลุ่มงานเทคนิคการแพทย์</option><option>กลุ่มงานเวชกรรมฟื้นฟู</option><option>กลุ่มงานสุขภาพดิจิทัล</option></select>
+    </div>
+    <div class="fg"><label>สิทธิ์</label><select id="mu-role"><option value="user">user — เจ้าหน้าที่ทั่วไป</option><option value="admin">admin — ช่างภาพ / ผู้ดูแล</option></select></div>
+    <div class="alert error" id="muErr" style="margin-top:10px;"></div>
+    <div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('modalUser')">ยกเลิก</button><button class="btn btn-primary" style="width:auto;" onclick="saveUser()">บันทึก</button></div>
+  </div>
+</div>
+
+<!-- MODAL: Change Password -->
+<div class="modal-overlay" id="modalPwd">
+  <div class="modal">
+    <div class="modal-title">🔑 เปลี่ยนรหัสผ่าน</div>
+    <div class="fg"><label>รหัสผ่านเดิม</label><input type="password" id="cp-old"/></div>
+    <div class="fg"><label>รหัสผ่านใหม่</label><input type="password" id="cp-new"/></div>
+    <div class="fg"><label>ยืนยัน</label><input type="password" id="cp-cfm"/></div>
+    <div class="alert error" id="cpErr" style="margin-top:10px;"></div>
+    <div class="alert success" id="cpOk" style="margin-top:10px;"></div>
+    <div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('modalPwd')">ปิด</button><button class="btn btn-primary" style="width:auto;" onclick="doChangePwd()">บันทึก</button></div>
+  </div>
+</div>
+
+<!-- MODAL: สมัครบัญชีใหม่ -->
+<div class="modal-overlay" id="modalRegister">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-title">📝 สมัครบัญชีใหม่</div>
+    <div style="font-size:13px;color:var(--tx2);margin-bottom:18px;background:var(--blue-lt);border-radius:10px;padding:10px 14px;border:1px solid rgba(79,142,247,.2);">
+      หลังสมัครแล้ว admin จะอนุมัติให้เข้าใช้งานได้ครับ
+    </div>
+    <div class="fg"><label>ชื่อ-นามสกุล <span class="req">*</span></label><input type="text" id="reg-name" placeholder="เช่น นายสมชาย ใจดี"/></div>
+    <div class="fg"><label>กลุ่มงาน <span class="req">*</span></label>
+      <select id="reg-dept">
+        <option value="">— เลือกกลุ่มงาน —</option>
+        <option>กลุ่มงานการพยาบาล</option>
+        <option>กลุ่มงานการแพทย์</option>
+        <option>กลุ่มงานทันตกรรม</option>
+        <option>กลุ่มงานจิตเวชและยาเสพติด</option>
+        <option>กลุ่มงานบริการด้านปฐมภูมิและองค์รวม</option>
+        <option>กลุ่มงานบริหารทั่วไป</option>
+        <option>กลุ่มงานประกันสุขภาพยุทธศาสตร์</option>
+        <option>กลุ่มงานแพทย์แผนไทยและแพทย์ทางเลือก</option>
+        <option>กลุ่มงานแพทย์แผนไทยและแพทย์ทางเลือก รายคาบ</option>
+        <option>กลุ่มงานเภสัชกรรมและคุ้มครองผู้บริโภค</option>
+        <option>กลุ่มงานเทคนิคการแพทย์</option>
+        <option>กลุ่มงานเวชกรรมฟื้นฟู</option>
+        <option>กลุ่มงานสุขภาพดิจิทัล</option>
+      </select>
+    </div>
+    <div class="fg"><label>Username <span class="req">*</span></label><input type="text" id="reg-user" placeholder="ตั้งชื่อผู้ใช้ (ภาษาอังกฤษ)"/></div>
+    <div class="fg"><label>รหัสผ่าน <span class="req">*</span></label><input type="password" id="reg-pass" placeholder="อย่างน้อย 6 ตัวอักษร"/></div>
+    <div class="fg"><label>ยืนยันรหัสผ่าน <span class="req">*</span></label><input type="password" id="reg-pass2" placeholder="กรอกรหัสผ่านอีกครั้ง"/></div>
+    <div class="alert error"   id="regErr" style="margin-top:8px;"></div>
+    <div class="alert success" id="regOk"  style="margin-top:8px;"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modalRegister')">ยกเลิก</button>
+      <button class="btn btn-primary" style="width:auto;" id="regBtn" onclick="doRegister()">ส่งคำขอสมัคร</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: คำขอรออนุมัติ (admin) -->
+<div class="modal-overlay" id="modalPending">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-title">📬 คำขอสมัครที่รออนุมัติ</div>
+    <div id="pendingList"><div class="loading">กำลังโหลด...</div></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modalPending')">ปิด</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Register -->
+<div class="modal-overlay" id="modalRegister" style="z-index:10000;">
+  <div class="modal" style="max-width:440px;padding:0;overflow:hidden;border-radius:24px;">
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,#131928,#0d1220);padding:24px 28px 20px;position:relative;overflow:hidden;">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(79,142,247,.15),transparent);pointer-events:none;"></div>
+      <div style="position:relative;">
+        <div style="font-family:'Chakra Petch',sans-serif;font-size:20px;font-weight:700;color:#fff;letter-spacing:1px;">สมัครบัญชีใหม่</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.45);margin-top:4px;">โรงพยาบาลวังน้ำเย็น</div>
+      </div>
+    </div>
+    <!-- Body -->
+    <div style="padding:24px 28px;background:var(--surface);">
+      <div class="fg">
+        <label>ชื่อ-นามสกุล <span class="req">*</span></label>
+        <input type="text" id="reg-name" placeholder="เช่น นายสมชาย ใจดี"/>
+      </div>
+      <div class="fg">
+        <label>กลุ่มงาน <span class="req">*</span></label>
+        <select id="reg-dept">
+          <option value="">— เลือกกลุ่มงาน —</option>
+          <option>กลุ่มงานการพยาบาล</option>
+          <option>กลุ่มงานการแพทย์</option>
+          <option>กลุ่มงานทันตกรรม</option>
+          <option>กลุ่มงานจิตเวชและยาเสพติด</option>
+          <option>กลุ่มงานบริการด้านปฐมภูมิและองค์รวม</option>
+          <option>กลุ่มงานบริหารทั่วไป</option>
+          <option>กลุ่มงานประกันสุขภาพยุทธศาสตร์</option>
+          <option>กลุ่มงานแพทย์แผนไทยและแพทย์ทางเลือก</option>
+          <option>กลุ่มงานแพทย์แผนไทยและแพทย์ทางเลือก รายคาบ</option>
+          <option>กลุ่มงานเภสัชกรรมและคุ้มครองผู้บริโภค</option>
+          <option>กลุ่มงานเทคนิคการแพทย์</option>
+          <option>กลุ่มงานเวชกรรมฟื้นฟู</option>
+          <option>กลุ่มงานสุขภาพดิจิทัล</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Username <span class="req">*</span></label>
+        <input type="text" id="reg-username" placeholder="ตั้งเอง เช่น somchai.j" autocomplete="off"/>
+        <div style="font-size:11px;color:var(--tx3);margin-top:3px;">ตัวอักษร ตัวเลข หรือ . _ ได้ ไม่เว้นวรรค</div>
+      </div>
+      <div class="fg">
+        <label>รหัสผ่าน <span class="req">*</span></label>
+        <input type="password" id="reg-password" placeholder="อย่างน้อย 4 ตัวอักษร"/>
+      </div>
+      <div class="fg">
+        <label>ยืนยันรหัสผ่าน <span class="req">*</span></label>
+        <input type="password" id="reg-confirm" placeholder="กรอกรหัสผ่านอีกครั้ง" onkeydown="if(event.key==='Enter')doRegister()"/>
+      </div>
+      <div class="alert error" id="regErr" style="margin-top:4px;"></div>
+      <div class="alert success" id="regOk" style="margin-top:4px;"></div>
+    </div>
+    <!-- Footer -->
+    <div style="padding:16px 28px;background:var(--elevated);border-top:1px solid var(--border);display:flex;gap:10px;justify-content:space-between;align-items:center;">
+      <span onclick="closeModal('modalRegister')" style="font-size:13px;color:var(--tx2);cursor:pointer;">← กลับเข้าสู่ระบบ</span>
+      <button onclick="doRegister()" style="padding:11px 28px;background:linear-gradient(135deg,#4f8ef7,#2563eb);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;box-shadow:0 4px 14px rgba(79,142,247,.4);" id="regBtn">สมัครบัญชี</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Avatar Picker -->
+<div class="modal-overlay" id="modalAvatar">
+  <div class="modal" style="max-width:580px;padding:0;overflow:hidden;border-radius:24px;">
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,#1a1e28,#0d1220);padding:28px 28px 0;position:relative;overflow:hidden;">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(79,142,247,.15),transparent);pointer-events:none;"></div>
+      <div style="position:relative;z-index:1;">
+        <div style="font-family:'Chakra Petch',sans-serif;font-size:20px;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:4px;">เลือก Avatar</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.45);margin-bottom:20px;">แสดงตัวตนของคุณในระบบ</div>
+        <!-- Preview bar -->
+        <div style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px 16px;margin-bottom:20px;">
+          <div id="avatarBigPreview" style="width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,#4f8ef7,#34d399);display:flex;align-items:center;justify-content:center;font-size:30px;overflow:hidden;flex-shrink:0;border:2px solid rgba(255,255,255,.2);"></div>
+          <div>
+            <div style="font-size:15px;font-weight:600;color:#fff;" id="avatarPreviewName">—</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.4);margin-top:2px;">Avatar ที่เลือกอยู่</div>
+          </div>
+          <div style="margin-left:auto;">
+            <div style="font-size:11px;color:rgba(255,255,255,.3);text-align:right;">เลือกจากด้านล่าง</div>
+          </div>
+        </div>
+        <!-- Tabs -->
+        <div style="display:flex;gap:2px;background:rgba(255,255,255,.05);border-radius:12px;padding:3px;">
+          <button class="av-tab active" id="avTab-emoji" onclick="switchAvatarTab('emoji')">😊 Emoji</button>
+          <button class="av-tab" id="avTab-cartoon" onclick="switchAvatarTab('cartoon')">🎨 การ์ตูน</button>
+          <button class="av-tab" id="avTab-upload" onclick="switchAvatarTab('upload')" style="display:none;">⬆️ อัปโหลด</button>
+        </div>
+      </div>
+    </div>
+    <!-- Body -->
+    <div style="padding:20px 28px;background:var(--surface);max-height:380px;overflow-y:auto;">
+      <!-- Emoji Tab -->
+      <div id="avatarTab-emoji">
+        <div id="emojiTabContent"></div>
+      </div>
+      <!-- Cartoon Tab -->
+      <div id="avatarTab-cartoon" style="display:none;">
+        <div id="cartoonGrid" class="av-grid"></div>
+        <div id="noCartoon" style="display:none;text-align:center;padding:32px 0;">
+          <div style="font-size:36px;margin-bottom:10px;opacity:.4;">🎨</div>
+          <div style="font-size:14px;color:var(--tx3);">ยังไม่มีการ์ตูนในระบบ</div>
+          <div style="font-size:12px;color:var(--tx3);margin-top:4px;">Admin สามารถเพิ่มได้จากแท็บ "อัปโหลด"</div>
+        </div>
+      </div>
+      <!-- Upload Tab (Admin) -->
+      <div id="avatarTab-upload" style="display:none;">
+        <!-- How to guide -->
+        <div style="background:var(--blue-lt);border:1px solid rgba(79,142,247,.2);border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:13px;line-height:1.8;">
+          <div style="font-weight:700;color:var(--blue);margin-bottom:6px;">📌 วิธีเพิ่มรูปการ์ตูนผ่าน Google Drive</div>
+          <ol style="padding-left:18px;color:var(--tx2);">
+            <li>อัปโหลดรูปลง <strong style="color:var(--tx);">Google Drive</strong></li>
+            <li>คลิกขวาที่รูป → <strong style="color:var(--tx);">Share</strong> → เปลี่ยนเป็น <strong style="color:var(--green);">Anyone with the link</strong></li>
+            <li>คลิก <strong style="color:var(--tx);">Copy link</strong> จะได้ URL แบบนี้:<br/>
+              <code style="font-size:11px;background:var(--elevated);padding:2px 6px;border-radius:4px;color:var(--amber);">https://drive.google.com/file/d/<b>FILE_ID</b>/view</code>
+            </li>
+            <li>คัดลอกเฉพาะ <strong style="color:var(--amber);">FILE_ID</strong> มาวางด้านล่าง</li>
+          </ol>
+        </div>
+        <!-- Add form -->
+        <div style="background:var(--elevated);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;">
+          <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;">
+            <div id="drivePreviewBox" style="width:64px;height:64px;border-radius:14px;background:var(--bg);border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;overflow:hidden;">🖼️</div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+              <div>
+                <label style="font-size:12px;font-weight:600;color:var(--tx2);display:block;margin-bottom:4px;">Google Drive File ID <span style="color:var(--red);">*</span></label>
+                <input type="text" id="driveFileId" placeholder="เช่น 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs" oninput="previewDrive()" style="font-size:13px;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);color:var(--tx);width:100%;font-family:monospace;"/>
+              </div>
+              <div>
+                <label style="font-size:12px;font-weight:600;color:var(--tx2);display:block;margin-bottom:4px;">ชื่อการ์ตูน <span style="color:var(--red);">*</span></label>
+                <input type="text" id="cartoonName" placeholder="เช่น หมอน้อย, พยาบาลน้อย" style="font-size:13px;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);color:var(--tx);width:100%;"/>
+              </div>
+            </div>
+          </div>
+          <div id="driveErrMsg" style="font-size:12px;color:var(--red);margin-bottom:8px;display:none;"></div>
+          <button onclick="saveCartoon()" style="width:100%;padding:11px;background:linear-gradient(135deg,#34d399,#059669);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;">+ เพิ่มการ์ตูนเข้าระบบ</button>
+        </div>
+        <!-- List -->
+        <div id="cartoonManageList"></div>
+      </div>
+    </div>
+    <!-- Footer -->
+    <div style="padding:16px 28px;background:var(--elevated);border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="closeModal('modalAvatar')" style="width:auto;">ยกเลิก</button>
+      <button onclick="saveAvatar()" style="padding:11px 28px;background:linear-gradient(135deg,#4f8ef7,#2563eb);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;box-shadow:0 4px 14px rgba(79,142,247,.4);">✓ บันทึก Avatar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ======================================================
+//  ตั้งค่า URL ของ Google Apps Script ที่นี่
+//  วิธีหา: Deploy → Manage deployments → Web app URL
+//  ตัวอย่าง: "https://script.google.com/macros/s/AKfycb.../exec"
+// ======================================================
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzidg-s6smc5f-kLcYQGvu10wwVgvYfDoli2FkeNqNv5MhPsYnrJw2fA1Jr7xXdmoz1/exec";
+</script>
+<script>
+/* ===== STATE ===== */
+let session=null, allBookings=[], userList=[], showDone=true;
+let calYear=new Date().getFullYear(), calMonth=new Date().getMonth();
+let chartMonthly=null, chartType=null;
+let currentDetailIdx=-1, detailMode='view';
+const today=new Date(); today.setHours(0,0,0,0);
+
+/* ===== UTILS ===== */
+const $=id=>document.getElementById(id);
+const fmtDate=d=>{
+  try{
+    if(!d||isNaN(d.getTime()))return"";
+    // Use local year/month/date to avoid UTC offset shifting the date
+    const y=d.getFullYear();
+    const m=String(d.getMonth()+1).padStart(2,"0");
+    const dd=String(d.getDate()).padStart(2,"0");
+    return y+"-"+m+"-"+dd;
+  }catch{return"";}
+};
+const esc=s=>String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+function api(p){return fetch(APPS_SCRIPT_URL+"?"+new URLSearchParams(p).toString()).then(r=>r.json());}
+function showAlert(id,msg,type){const e=$(id);if(!e)return;e.className="alert "+type;e.textContent=msg;e.style.display="block";}
+function hideAlert(id){const e=$(id);if(e)e.style.display="none";}
+
+/* ===== DATE/TIME HELPERS ===== */
+function parseDate(s){
+  if(!s)return null;
+  if(s instanceof Date)return isNaN(s.getTime())?null:s;
+  const str=String(s).trim();
+  if(!str)return null;
+  // Primary: YYYY-MM-DD (what Code.gs now sends)
+  const iso=str.slice(0,10);
+  if(/^\d{4}-\d{2}-\d{2}$/.test(iso)){
+    const [y,m,d]=iso.split("-").map(Number);
+    return new Date(y,m-1,d,12,0,0); // local time, no TZ shift
+  }
+  // M/D/YYYY fallback
+  const p=str.split(/[\/]/);
+  if(p.length===3){
+    const yr=p[2].length===2?"20"+p[2]:p[2];
+    return new Date(Number(yr),Number(p[0])-1,Number(p[1]),12,0,0);
+  }
+  return null;
+}
+
+function formatTime(t){
+  if(!t)return"—";
+  const s=String(t).trim();
+  if(s==="08:30-full")return"08:30 - 16:00 น. (เต็มวัน)";
+  if(s==="08:30")return"08:30 - 12:00 น. (เช้า)";
+  if(s==="13:00")return"13:00 - 16:00 น. (บ่าย)";
+  // legacy HH:MM from old bookings before dropdown
+  if(/^\d{2}:\d{2}$/.test(s))return s+" น.";
+  return s||"—";
+}
+
+function thDate(d){
+  if(!d)return"—";
+  return d.toLocaleDateString("th-TH",{day:"numeric",month:"long",year:"numeric"});
+}
+
+function thDateShort(d){
+  if(!d)return"";
+  const m=d.getMonth()+1;
+  const y=String(d.getFullYear()+543).slice(-2);
+  return m+"/"+y;
+}
+
+/* ===== THEME ===== */
+let isDark=true;
+function toggleTheme(){
+  isDark=!isDark;
+  document.documentElement.setAttribute("data-theme",isDark?"dark":"light");
+  $("themeBtn").textContent=isDark?"🌙":"☀️";
+  localStorage.setItem("pqTheme",isDark?"dark":"light");
+  renderCharts();
+}
+(function(){const t=localStorage.getItem("pqTheme")||"dark";isDark=t==="dark";document.documentElement.setAttribute("data-theme",t);setTimeout(()=>{const b=$("themeBtn");if(b)b.textContent=isDark?"🌙":"☀️";},0);})();
+
+/* ===== LOCATION TOGGLE ===== */
+function toggleOtherLoc(selId,wrapId){
+  const v=$(selId).value;
+  $(wrapId).style.display=v==="other"?"flex":"none";
+  if(v!=="other")$(wrapId.replace("-wrap","")).value="";
+}
+function getLocVal(selId,otherId){
+  const v=$(selId).value;
+  return v==="other"?$(otherId).value.trim():v;
+}
+
+/* ===== AUTH ===== */
+async function doLogin(){
+  const u=$("l-user").value.trim(),p=$("l-pass").value;
+  if(!u||!p)return showAlert("loginErr","กรุณากรอกข้อมูลให้ครบ","error");
+  $("loginBtn").disabled=true;$("loginBtn").textContent="กำลังเข้าสู่ระบบ...";hideAlert("loginErr");
+  try{
+    const d=await api({action:"login",username:u,password:p});
+    if(d.success){
+      session={token:d.token,user:d.user};
+      if(d.user&&d.user.avatar) setUserAvatar(d.user.username,d.user.avatar);
+      localStorage.setItem("pqSession",JSON.stringify(session));
+      initApp();
+    }
+    else showAlert("loginErr",d.error||"ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง","error");
+  }catch{showAlert("loginErr","ไม่สามารถเชื่อมต่อได้ กรุณาลองใหม่","error");}
+  $("loginBtn").disabled=false;$("loginBtn").textContent="เข้าสู่ระบบ";
+}
+
+function doLogout(){
+  session=null;localStorage.removeItem("pqSession");
+  $("screen-app").classList.remove("active");$("screen-login").classList.add("active");
+  $("l-user").value="";$("l-pass").value="";closeDrop();
+}
+
+function initApp(){
+  $("screen-login").classList.remove("active");$("screen-app").classList.add("active");
+  const u=session.user;
+  $("uName").textContent=u.name;
+  // Set avatar after session established
+  loadCartoons().then(updateHeaderAvatar);
+  $("ddName").textContent=u.name;$("ddDept").textContent=u.department;
+  $("bookInfo").textContent="👤 "+u.name+"   |   🏥 "+u.department;
+  $("f-date").min=fmtDate(today);
+  const nav=$("headerNav");nav.innerHTML="";
+  if(u.role==="user"){
+    nav.innerHTML=`<button class="nav-btn active" onclick="switchTab('book',this)"><span class="ni">📅</span>จองคิว</button><button class="nav-btn" onclick="switchTab('mybook',this);loadMyBookings()"><span class="ni">📋</span>รายการของฉัน</button>`;
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));$("page-book").classList.add("active");
+  }else{
+    nav.innerHTML=`<button class="nav-btn active" onclick="switchTab('dash',this);loadBookings()"><span class="ni">📊</span>Dashboard</button><button class="nav-btn" onclick="switchTab('book',this)"><span class="ni">📅</span>จองคิว</button><button class="nav-btn nav-admin" onclick="switchTab('users',this);loadUsers()"><span class="ni">👥</span>จัดการผู้ใช้</button><button class="nav-btn" id="pendingNavBtn" onclick="openPending()" style="display:none;position:relative;"><span class="ni">📬</span>รออนุมัติ<span id="pendingBadge" style="position:absolute;top:6px;right:8px;background:var(--red);color:#fff;border-radius:10px;font-size:11px;font-weight:700;padding:1px 6px;min-width:18px;text-align:center;"></span></button>`;
+    checkPending();
+    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));$("page-dash").classList.add("active");
+    setTimeout(loadBookings,100);
+  }
+}
+
+function switchTab(tab,btn){
+  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  btn.classList.add("active");$("page-"+tab).classList.add("active");
+}
+
+/* ===== BOOKING FORM ===== */
+async function loadDateBookings(){
+  const date=$("f-date").value;
+  if(!date){$("date-bookings-wrap").style.display="none";return;}
+  $("date-bookings-wrap").style.display="block";
+  $("date-bookings-list").innerHTML="<div style='font-size:13px;color:var(--tx3);'>กำลังโหลด...</div>";
+  // Use cached allBookings if available, else fetch
+  let list=allBookings;
+  if(!list.length){try{const d=await api({action:"bookings"});list=d.bookings||[];}catch{}}
+  const dayList=list.filter(b=>{const pd=parseDate(b.date);return pd&&fmtDate(pd)===date;});
+  if(!dayList.length){$("date-bookings-list").innerHTML="<div style='font-size:13px;color:var(--green);'>✓ ยังไม่มีการจองในวันนี้</div>";return;}
+  $("date-bookings-list").innerHTML=dayList.map(b=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--elevated);border-radius:10px;border:1px solid var(--border);margin-bottom:6px;font-size:13px;">
+      <span style="font-weight:600;">${esc(b.name)}</span>
+      <span class="tag tag-dept">${esc(b.department)}</span>
+      <span class="tag tag-type">${formatTime(b.time)}</span>
+      ${b.location?`<span class="tag tag-loc">📍 ${esc(b.location)}</span>`:""}
+      <span class="tag ${b.status==='เสร็จสิ้น'?'tag-ok':'tag-wait'}">${b.status==='เสร็จสิ้น'?'✅ เสร็จสิ้น':'⏳ รอ'}</span>
+    </div>`).join("");
+}
+
+async function submitBooking(){
+  const date=$("f-date").value,timeVal=$("f-time").value,type=$("f-type").value;
+  const location=getLocVal("f-loc","f-loc-other"),note=$("f-note").value.trim();
+  hideAlert("bookOk");hideAlert("bookErr");
+  if(!date||!timeVal||!type)return showAlert("bookErr","กรุณากรอกข้อมูลที่จำเป็นให้ครบ","error");
+  if($("f-loc").value==="other"&&!location)return showAlert("bookErr","กรุณาระบุสถานที่","error");
+  $("bookBtn").disabled=true;$("bookBtn").textContent="กำลังบันทึก...";
+  try{
+    const d=await api({action:"book",token:session.token,date,time:timeVal,type,location,note});
+    if(d.success){
+      showAlert("bookOk","✅ จองคิวสำเร็จ! "+date+" "+formatTime(timeVal),"success");
+      ["f-date","f-time","f-type","f-loc","f-note"].forEach(id=>$(id).value="");
+      $("f-loc-other").value="";$("f-loc-other-wrap").style.display="none";
+      $("date-bookings-wrap").style.display="none";
+      allBookings=[];// clear cache
+    }else showAlert("bookErr","❌ "+(d.error||"เกิดข้อผิดพลาด"),"error");
+  }catch{showAlert("bookErr","❌ ไม่สามารถเชื่อมต่อได้","error");}
+  $("bookBtn").disabled=false;$("bookBtn").textContent="✓ ยืนยันการจอง";
+}
+
+/* ===== MY BOOKINGS ===== */
+async function loadMyBookings(){
+  $("myBookList").innerHTML='<div class="loading">กำลังโหลด...</div>';
+  try{
+    const d=await api({action:"bookings"});
+    const mine=(d.bookings||[]).filter(b=>b.username===session.user.username)
+      .sort((a,b)=>{const da=parseDate(a.date),db=parseDate(b.date);return(db?db.getTime():0)-(da?da.getTime():0);});
+    if(!mine.length){$("myBookList").innerHTML='<div class="empty-state"><div class="empty-icon">📭</div>ยังไม่มีรายการจอง</div>';return;}
+    // Store in allBookings for detail access
+    allBookings=d.bookings||[];
+    $("myBookList").innerHTML=mine.map(b=>bookingCard(b,allBookings.indexOf(b),false,true)).join("");
+  }catch{$("myBookList").innerHTML='<div class="empty-state">⚠️ โหลดไม่สำเร็จ</div>';}
+}
+
+/* ===== DASHBOARD ===== */
+async function loadBookings(){
+  $("bookingList").innerHTML='<div class="loading">กำลังโหลด...</div>';
+  renderCalendar();
+  try{
+    const d=await api({action:"bookings"});
+    if(d.error)throw new Error(d.error);
+    allBookings=(d.bookings||[]).sort((a,b)=>{
+      const da=parseDate(a.date),db=parseDate(b.date);
+      return (da?da.getTime():0)-(db?db.getTime():0);
+    });
+    renderStats();renderCalendar();renderList();renderCharts();
+  }catch(err){$("bookingList").innerHTML=`<div class="empty-state">⚠️ ${esc(err.message)}</div>`;}
+}
+
+function renderStats(){
+  const sw=new Date(today);sw.setDate(today.getDate()-((today.getDay()+6)%7));
+  const ew=new Date(sw);ew.setDate(sw.getDate()+6);
+  const mon=fmtDate(today).slice(0,7);
+  const sws=fmtDate(sw),ews=fmtDate(ew);
+  $("s-week").textContent=allBookings.filter(b=>{const ds=fmtDate(parseDate(b.date));return ds&&ds>=sws&&ds<=ews;}).length;
+  $("s-month").textContent=allBookings.filter(b=>{const ds=fmtDate(parseDate(b.date));return ds&&ds.startsWith(mon);}).length;
+  $("s-pending").textContent=allBookings.filter(b=>b.status==="รอดำเนินการ").length;
+  $("s-done").textContent=allBookings.filter(b=>b.status==="เสร็จสิ้น").length;
+}
+
+/* ===== CALENDAR ===== */
+function calMove(dir){calMonth+=dir;if(calMonth>11){calMonth=0;calYear++;}else if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
+function renderCalendar(){
+  const months=["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+  $("calMonthLabel").textContent=months[calMonth]+" "+(calYear+543);
+  const days=["จ","อ","พ","พฤ","ศ","ส","อา"];
+  const firstDay=new Date(calYear,calMonth,1);
+  const lastDay=new Date(calYear,calMonth+1,0);
+  let startDow=(firstDay.getDay()+6)%7;
+  let cells=[];
+  // prev month days
+  for(let i=0;i<startDow;i++){const d=new Date(calYear,calMonth,1-startDow+i,12,0,0);cells.push({d,other:true});}
+  // this month
+  for(let i=1;i<=lastDay.getDate();i++)cells.push({d:new Date(calYear,calMonth,i,12,0,0),other:false});
+  // next month
+  while(cells.length%7!==0){const d=new Date(calYear,calMonth+1,cells.length-lastDay.getDate()-startDow+1,12,0,0);cells.push({d,other:true});}
+
+  const header=days.map(dn=>`<div class="cal-day-name">${dn}</div>`).join("");
+  const body=cells.map(({d,other})=>{
+    const ds=fmtDate(d);
+    const dayBks=allBookings.filter(b=>{const pd=parseDate(b.date);return pd&&fmtDate(pd)===ds;});
+    const pending=dayBks.filter(b=>b.status!=="เสร็จสิ้น").length;
+    const done=dayBks.filter(b=>b.status==="เสร็จสิ้น").length;
+    const isT=d.toDateString()===today.toDateString();
+    const hasEv=dayBks.length>0;
+    return`<div class="day-cell ${other?"other-month":""} ${hasEv?"has-event":""} ${isT?"today":""}" onclick="filterDay('${ds}')">
+      <div class="dc-num">${d.getDate()}</div>
+      <div class="dc-dots">
+        ${Array(Math.min(pending,3)).fill('<div class="dc-dot"></div>').join("")}
+        ${Array(Math.min(done,2)).fill('<div class="dc-dot done"></div>').join("")}
+      </div>
+    </div>`;
+  }).join("");
+  $("calGrid").innerHTML=header+body;
+}
+
+function filterDay(ds){$("fDate").value=ds;renderList();}
+
+let showDoneFilter=true;
+function toggleDoneFilter(){
+  showDoneFilter=!showDoneFilter;
+  const btn=$("filterToggle");
+  btn.style.background="";btn.style.color="";
+  btn.textContent=showDoneFilter?"แสดงทั้งหมด":"ซ่อนรายการเสร็จสิ้น";
+  renderList();
+}
+
+function renderList(){
+  const srch=$("srch").value.toLowerCase(),fd=$("fDate").value,ft=$("fType").value;
+  let list=allBookings.filter(b=>{
+    const ds=fmtDate(parseDate(b.date));
+    return(!srch||b.name.toLowerCase().includes(srch)||b.department.toLowerCase().includes(srch))
+      &&(!fd||ds===fd)&&(!ft||b.type===ft)
+      &&(showDoneFilter||b.status!=="เสร็จสิ้น");
+  });
+  if(!list.length){$("bookingList").innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div>ไม่มีรายการที่ตรงกับเงื่อนไข</div>';return;}
+  $("bookingList").innerHTML=list.map(b=>bookingCard(b,allBookings.indexOf(b),true,false)).join("");
+}
+
+function bookingCard(b,idx,isAdmin,isUser){
+  const d=parseDate(b.date);if(!d)return"";
+  const done=b.status==="เสร็จสิ้น";
+  const tsRaw=String(b.timestamp||"");
+  // tsRaw = "19/5/2026 09:27" (Asia/Bangkok from Apps Script)
+  const ts=tsRaw?`<div class="bk-booked">จองเมื่อ: ${esc(tsRaw)}</div>`:"";
+  return`<div class="booking-item ${done?"done-item":""}" onclick="openDetail(${idx},${isAdmin},${isUser})">
+    <div class="date-badge ${done?"done-badge":""}"><div class="db-day">${d.getDate()}</div><div class="db-month">${thDateShort(d).slice(-6)}</div></div>
+    <div style="flex:1">
+      <div class="bk-name">${esc(b.name)}</div>
+      ${ts}
+      <div class="bk-meta">
+        <span class="tag tag-dept">🏥 ${esc(b.department)}</span>
+        <span class="tag tag-type">📷 ${esc(b.type)}</span>
+        <span style="color:var(--tx2);">${formatTime(b.time)}</span>
+        ${b.location?`<span class="tag tag-loc">📍 ${esc(b.location)}</span>`:""}
+      </div>
+      ${b.note?`<div class="bk-note">📝 ${esc(b.note)}</div>`:""}
+      <div style="margin-top:6px;">
+        <span class="tag ${done?"tag-ok":"tag-wait"}">${done?"✅ เสร็จสิ้น":"⏳ รอดำเนินการ"}</span>
+        <span class="tag-hint">คลิกเพื่อดูรายละเอียด ›</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ===== DETAIL MODAL ===== */
+function openDetail(idx,isAdmin,isUser){
+  const b=allBookings[idx];if(!b)return;
+  currentDetailIdx=idx;detailMode='view';
+  const d=parseDate(b.date);
+  const done=b.status==="เสร็จสิ้น";
+  $("editForm").style.display="none";
+  $("detailTitle").textContent="📋 รายละเอียดการจอง";
+  $("detailContent").innerHTML=`
+    <div style="display:flex;gap:16px;align-items:center;padding:16px;background:var(--elevated);border-radius:14px;border:1px solid var(--border);margin-bottom:12px;">
+      <div class="date-badge ${done?'done-badge':''}" style="flex-shrink:0;"><div class="db-day">${d?d.getDate():"?"}</div><div class="db-month">${d?thDateShort(d):""}</div></div>
+      <div>
+        <div style="font-size:11px;color:var(--tx3);font-weight:600;text-transform:uppercase;margin-bottom:4px;">ผู้จองคิวถ่ายรูป</div>
+        <div style="font-size:18px;font-weight:700;">${esc(b.name)}</div>
+        <div style="font-size:13px;color:var(--tx2);margin-top:3px;">${esc(b.department)}</div>
+      </div>
+    </div>
+    <div class="detail-grid">
+      <div class="detail-box"><div class="detail-box-label">วันที่</div><div class="detail-box-value">${thDate(d)}</div></div>
+      <div class="detail-box"><div class="detail-box-label">ช่วงเวลา</div><div class="detail-box-value">${formatTime(b.time)}</div></div>
+      <div class="detail-box"><div class="detail-box-label">ประเภท</div><div class="detail-box-value">${esc(b.type)}</div></div>
+      <div class="detail-box"><div class="detail-box-label">สถานที่</div><div class="detail-box-value">${esc(b.location||"—")}</div></div>
+    </div>
+    ${b.note?`<div class="detail-box" style="margin-bottom:12px;"><div class="detail-box-label">หมายเหตุ</div><div class="detail-box-value" style="font-weight:400;">${esc(b.note)}</div></div>`:""}
+    <div style="padding:12px;border-radius:12px;background:${done?"var(--green-lt)":"var(--amber-lt)"};border:1px solid ${done?"var(--green)":"var(--amber)"};">
+      <span style="font-weight:600;color:${done?"var(--green)":"var(--amber)"};">${done?"✅ เสร็จสิ้นแล้ว":"⏳ รอดำเนินการ"}</span>
+    </div>`;
+
+  // Build action buttons
+  const acts=[];
+  acts.push(`<button class="btn btn-outline" onclick="closeModal('modalDetail')" style="width:auto;">ปิด</button>`);
+  if(isAdmin||isUser){
+    acts.push(`<button class="btn btn-danger btn-sm" onclick="deleteBooking(${idx})" style="width:auto;">🗑️ ลบ</button>`);
+    acts.push(`<button class="btn btn-warning" style="width:auto;" onclick="switchToEdit(${idx})">✏️ แก้ไข</button>`);
+  }
+  if(isAdmin&&!done){
+    acts.push(`<button class="btn btn-success" style="width:auto;" id="btnComplete" onclick="markComplete()">✓ เสร็จสิ้น</button>`);
+  }
+  $("detailActions").innerHTML=acts.join("");
+  openModal("modalDetail");
+}
+
+function switchToEdit(idx){
+  const b=allBookings[idx];if(!b)return;
+  detailMode='edit';
+  $("detailTitle").textContent="✏️ แก้ไขการจอง";
+  $("editForm").style.display="block";
+  const d=parseDate(b.date);
+  if(d)$("e-date").value=fmtDate(d);
+  $("e-time").value=b.time||"08:30";
+  $("e-type").value=b.type||"";
+  $("e-note").value=b.note||"";
+  // set location
+  const locSel=$("e-loc");
+  let found=false;
+  for(let o of locSel.options){if(o.value===b.location||o.textContent===b.location){locSel.value=o.value;found=true;break;}}
+  if(!found&&b.location){locSel.value="other";$("e-loc-other").value=b.location;$("e-loc-other-wrap").style.display="flex";}
+  else{$("e-loc-other-wrap").style.display="none";}
+
+  $("detailActions").innerHTML=`
+    <button class="btn btn-outline" onclick="closeModal('modalDetail')">ยกเลิก</button>
+    <button class="btn btn-primary" style="width:auto;" onclick="saveEdit(${idx})">💾 บันทึกการแก้ไข</button>`;
+  hideAlert("editErr");
+}
+
+async function saveEdit(idx){
+  const b=allBookings[idx];if(!b)return;
+  const date=$("e-date").value,time=$("e-time").value,type=$("e-type").value;
+  const location=getLocVal("e-loc","e-loc-other"),note=$("e-note").value.trim();
+  if(!date||!time||!type)return showAlert("editErr","กรุณากรอกข้อมูลให้ครบ","error");
+  try{
+    const d=await api({action:"editBooking",token:session.token,username:b.username,origDate:String(b.date),origTime:String(b.time),date,time,type,location,note});
+    if(d.success){
+      allBookings[idx]={...b,date,time,type,location,note};
+      closeModal("modalDetail");
+      renderStats();renderCalendar();renderList();renderCharts();
+      if(session.user.role==="user")loadMyBookings();
+    }else showAlert("editErr",d.error||"เกิดข้อผิดพลาด","error");
+  }catch{showAlert("editErr","ไม่สามารถเชื่อมต่อได้","error");}
+}
+
+async function deleteBooking(idx){
+  const b=allBookings[idx]; if(!b) return;
+  const d=parseDate(b.date);
+  const dateStr=d?thDate(d):String(b.date);
+  const msg="ลบรายการจองของ "+b.name+" ?\nวันที่ "+dateStr+" "+formatTime(b.time);
+  if(!confirm(msg)) return;
+  closeModal("modalDetail");
+  try{
+    const res=await api({action:"deleteBooking",token:session.token,date:String(b.date),time:String(b.time)});
+    if(res.success){
+      allBookings.splice(idx,1);
+      renderStats();renderCalendar();renderList();renderCharts();
+      if($("page-mybook").classList.contains("active")) loadMyBookings();
+    }else{
+      alert("ลบไม่สำเร็จ: "+(res.error||"เกิดข้อผิดพลาด"));
+    }
+  }catch{ alert("ไม่สามารถเชื่อมต่อได้"); }
+}
+async function markComplete(){
+  const b=allBookings[currentDetailIdx];if(!b)return;
+  $("btnComplete").disabled=true;$("btnComplete").textContent="กำลังบันทึก...";
+  try{
+    const res=await api({action:"complete",token:session.token,username:b.username,date:String(b.date),time:String(b.time)});
+    if(res.success){
+      allBookings[currentDetailIdx].status="เสร็จสิ้น";
+      closeModal("modalDetail");renderStats();renderCalendar();renderList();renderCharts();
+    }else alert(res.error||"เกิดข้อผิดพลาด");
+  }catch{alert("ไม่สามารถเชื่อมต่อได้");}
+  if($("btnComplete")){$("btnComplete").disabled=false;$("btnComplete").textContent="✓ ดำเนินการเสร็จสิ้น";}
+}
+
+/* ===== DONE FILTER ===== */
+function showDoneOnly(){
+  showDoneFilter=true;
+  $("filterToggle").textContent="แสดงทั้งหมด";
+  // scroll to booking list
+  $("bookingList").scrollIntoView({behavior:"smooth",block:"start"});
+  // filter to done only
+  const srch=$("srch").value.toLowerCase(),fd=$("fDate").value,ft=$("fType").value;
+  const list=allBookings.filter(b=>{
+    const ds=fmtDate(parseDate(b.date));
+    return b.status==="เสร็จสิ้น"
+      &&(!srch||b.name.toLowerCase().includes(srch)||b.department.toLowerCase().includes(srch))
+      &&(!fd||ds===fd)&&(!ft||b.type===ft);
+  });
+  if(!list.length){$("bookingList").innerHTML='<div class="empty-state"><div class="empty-icon">✅</div>ยังไม่มีรายการเสร็จสิ้น</div>';return;}
+  $("bookingList").innerHTML=list.map(b=>bookingCard(b,allBookings.indexOf(b),true,false)).join("");
+  // highlight filter button
+  $("filterToggle").style.background="var(--green-lt)";
+  $("filterToggle").style.color="var(--green)";
+  $("filterToggle").textContent="✅ ดูเสร็จสิ้น ("+list.length+")";
+}
+
+/* ===== CHARTS ===== */
+function renderCharts(){
+  if(!allBookings.length)return;
+  const isDarkMode=document.documentElement.getAttribute("data-theme")==="dark";
+  const gridColor=isDarkMode?"rgba(255,255,255,.06)":"rgba(0,0,0,.06)";
+  const labelColor=isDarkMode?"#8b91a8":"#6b7280";
+  const mnNames=["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+
+  // Monthly stacked bar: pending vs done
+  const monthlyPending={},monthlyDone={};
+  allBookings.forEach(b=>{
+    const d=parseDate(b.date);if(!d)return;
+    const k=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+    if(b.status==="เสร็จสิ้น"){monthlyDone[k]=(monthlyDone[k]||0)+1;}
+    else{monthlyPending[k]=(monthlyPending[k]||0)+1;}
+  });
+  const allKeys=[...new Set([...Object.keys(monthlyPending),...Object.keys(monthlyDone)])].sort();
+  const thMonths=allKeys.map(k=>{const[y,m]=k.split("-");return mnNames[+m-1]+" "+(+y+543-2500);});
+  if(chartMonthly)chartMonthly.destroy();
+  chartMonthly=new Chart($("chartMonthly"),{
+    type:"bar",
+    data:{labels:thMonths,datasets:[
+      {label:"รอดำเนินการ",data:allKeys.map(k=>monthlyPending[k]||0),backgroundColor:"rgba(79,142,247,.75)",borderRadius:{topLeft:0,topRight:0,bottomLeft:6,bottomRight:6},stack:"s"},
+      {label:"เสร็จสิ้น",data:allKeys.map(k=>monthlyDone[k]||0),backgroundColor:"rgba(52,211,153,.75)",borderRadius:{topLeft:6,topRight:6,bottomLeft:0,bottomRight:0},stack:"s"}
+    ]},
+    options:{responsive:true,interaction:{mode:"index"},plugins:{legend:{labels:{color:labelColor,font:{family:"Sarabun"},padding:10}}},
+      scales:{x:{grid:{color:gridColor},ticks:{color:labelColor,font:{family:"Sarabun"}}},y:{grid:{color:gridColor},ticks:{color:labelColor,stepSize:1},stacked:true}}}
+  });
+
+  // Type doughnut — total per type with pending/done breakdown in tooltip
+  const typeCounts={},typePending={},typeDone={};
+  allBookings.forEach(b=>{
+    if(!b.type)return;
+    typeCounts[b.type]=(typeCounts[b.type]||0)+1;
+    if(b.status==="เสร็จสิ้น") typeDone[b.type]=(typeDone[b.type]||0)+1;
+    else typePending[b.type]=(typePending[b.type]||0)+1;
+  });
+  const allTypes=Object.keys(typeCounts);
+  const colors=["#4f8ef7","#34d399","#fbbf24","#f87171","#a78bfa","#fb923c"];
+  if(chartType)chartType.destroy();
+  chartType=new Chart($("chartType"),{
+    type:"doughnut",
+    data:{
+      labels:allTypes,
+      datasets:[{
+        data:allTypes.map(t=>typeCounts[t]),
+        backgroundColor:colors.slice(0,allTypes.length),
+        borderWidth:2,
+        borderColor:isDarkMode?"#13161d":"#ffffff",
+        hoverOffset:8
+      }]
+    },
+    options:{responsive:true,plugins:{
+      legend:{position:"bottom",labels:{color:labelColor,font:{family:"Sarabun",size:13},padding:14,usePointStyle:true}},
+      tooltip:{callbacks:{label:ctx=>{
+        const t=allTypes[ctx.dataIndex];
+        const total=typeCounts[t]||0;
+        const done=typeDone[t]||0;
+        const pending=typePending[t]||0;
+        return[" รวม: "+total+" รายการ"," รอดำเนินการ: "+pending,"  เสร็จสิ้น: "+done];
+      }}}
+    }}
+  });
+}
+
+/* ===== USERS ===== */
+async function loadUsers(){
+  $("userTableWrap").innerHTML='<div class="loading">กำลังโหลด...</div>';
+  try{
+    const d=await api({action:"users",token:session.token});
+    userList=d.users||[];renderUserSummary();renderUserTable();
+  }catch{$("userTableWrap").innerHTML='<div class="empty-state">⚠️ โหลดไม่สำเร็จ</div>';}
+}
+
+function renderUserSummary(){
+  const t=userList.length,a=userList.filter(u=>u.role==="admin").length,u=userList.filter(u=>u.role==="user").length,dp=[...new Set(userList.map(u=>u.department))].length;
+  $("userSummary").innerHTML=`<div class="schip"><div class="schip-num">${t}</div>ผู้ใช้ทั้งหมด</div><div class="schip"><div class="schip-num" style="color:var(--green);">${u}</div>เจ้าหน้าที่</div><div class="schip"><div class="schip-num" style="color:var(--red);">${a}</div>ผู้ดูแล</div><div class="schip"><div class="schip-num" style="color:var(--amber);">${dp}</div>กลุ่มงาน</div>`;
+}
+
+function renderUserTable(){
+  if(!userList.length){$("userTableWrap").innerHTML='<div class="empty-state">ยังไม่มีผู้ใช้</div>';return;}
+  $("userTableWrap").innerHTML=`<div style="overflow-x:auto;"><table class="data-table"><thead><tr><th>#</th><th>Username</th><th>ชื่อ-นามสกุล</th><th>กลุ่มงาน</th><th>สิทธิ์</th><th>จัดการ</th></tr></thead><tbody>${userList.map((u,i)=>`<tr><td style="color:var(--tx3);font-size:13px;">${i+1}</td><td><strong>${esc(u.username)}</strong></td><td>${esc(u.name)}</td><td style="font-size:13px;color:var(--tx2);">${esc(u.department)}</td><td><span class="rbadge ${u.role==="admin"?"admin":"user"}">${esc(u.role)}</span></td><td><div style="display:flex;gap:6px;"><button class="btn btn-warning btn-sm" onclick="openEditUser('${esc(u.username)}')">✏️</button>${u.username!==session.user.username?`<button class="btn btn-danger btn-sm" onclick="deleteUser('${esc(u.username)}')">🗑️</button>`:`<span style="font-size:12px;color:var(--tx3);padding:6px;">(คุณ)</span>`}</div></td></tr>`).join("")}</tbody></table></div>`;
+}
+
+function openAddUser(){$("muTitle").textContent="เพิ่มผู้ใช้ใหม่";$("mu-mode").value="add";$("mu-orig").value="";["mu-username","mu-password","mu-name"].forEach(id=>$(id).value="");$("mu-dept").value="";$("mu-role").value="user";$("mu-uname-wrap").style.display="flex";hideAlert("muErr");openModal("modalUser");}
+function openEditUser(username){const u=userList.find(x=>x.username===username);if(!u)return;$("muTitle").textContent="แก้ไข: "+u.username;$("mu-mode").value="edit";$("mu-orig").value=u.username;$("mu-username").value=u.username;$("mu-password").value="";$("mu-name").value=u.name;$("mu-dept").value=u.department;$("mu-role").value=u.role||"user";$("mu-uname-wrap").style.display="none";hideAlert("muErr");openModal("modalUser");}
+async function saveUser(){
+  const mode=$("mu-mode").value,username=mode==="add"?$("mu-username").value.trim():$("mu-orig").value;
+  const pw=$("mu-password").value,name=$("mu-name").value.trim(),dept=$("mu-dept").value,role=$("mu-role").value;
+  hideAlert("muErr");
+  if(mode==="add"&&(!username||!pw||!name||!dept))return showAlert("muErr","กรอกข้อมูลให้ครบ","error");
+  if(mode==="edit"&&(!name||!dept))return showAlert("muErr","กรอกชื่อและกลุ่มงาน","error");
+  const p=mode==="add"?{action:"addUser",token:session.token,username,password:pw,name,department:dept,role}:{action:"editUser",token:session.token,username,name,department:dept,role,...(pw?{password:pw}:{})};
+  try{const d=await api(p);if(d.success){closeModal("modalUser");loadUsers();}else showAlert("muErr",d.error,"error");}
+  catch{showAlert("muErr","เกิดข้อผิดพลาด","error");}
+}
+async function deleteUser(username){if(!confirm("ลบผู้ใช้ "+username+" ?"))return;try{const d=await api({action:"deleteUser",token:session.token,username});if(d.success)loadUsers();else alert(d.error);}catch{alert("เกิดข้อผิดพลาด");}}
+
+/* ===== CHANGE PWD ===== */
+function openChangePwd(){closeDrop();["cp-old","cp-new","cp-cfm"].forEach(id=>$(id).value="");hideAlert("cpErr");hideAlert("cpOk");openModal("modalPwd");}
+async function doChangePwd(){
+  const o=$("cp-old").value,n=$("cp-new").value,c=$("cp-cfm").value;
+  hideAlert("cpErr");hideAlert("cpOk");
+  if(!o||!n)return showAlert("cpErr","กรอกรหัสผ่านให้ครบ","error");
+  if(n!==c)return showAlert("cpErr","รหัสผ่านใหม่ไม่ตรงกัน","error");
+  try{const d=await api({action:"changePassword",token:session.token,oldPassword:o,newPassword:n});
+    if(d.success)showAlert("cpOk","✅ เปลี่ยนรหัสผ่านสำเร็จ","success");else showAlert("cpErr",d.error||"เกิดข้อผิดพลาด","error");}
+  catch{showAlert("cpErr","เกิดข้อผิดพลาด","error");}
+}
+
+/* ===== DROPDOWN / MODAL ===== */
+function openModal(id){$(id).classList.add("open");}
+function closeModal(id){$(id).classList.remove("open");}
+function toggleDrop(e){e&&e.stopPropagation();const dd=$("udrop");if(dd.classList.contains("open")){dd.classList.remove("open");return;}const r=document.querySelector(".uchip").getBoundingClientRect();dd.style.top=(r.bottom+8)+"px";dd.style.right=(window.innerWidth-r.right)+"px";dd.classList.add("open");}
+function closeDrop(){$("udrop").classList.remove("open");}
+document.addEventListener("click",e=>{if(!e.target.closest(".uchip"))closeDrop();if(e.target.classList.contains("modal-overlay"))closeModal(e.target.id);});
+
+/* ===== AVATAR SYSTEM ===== */
+const EMOJI_GROUPS = {
+  person: [
+    "😊","😄","😁","😆","🥰","😍","🤩","😎","🥳","😇",
+    "🤗","😌","🙂","😏","🤓","🧐","🤠","😴","🥸","😤",
+    "👨‍⚕️","👩‍⚕️","🧑‍⚕️","👨‍💼","👩‍💼","🧑‍💼",
+    "👨‍🔬","👩‍🔬","🧑‍🔬","👨‍💻","👩‍💻","🧑‍💻",
+    "👮","👮‍♀️","💂","💂‍♀️","🕵️","🕵️‍♀️",
+    "👷","👷‍♀️","🧑‍🚒","👩‍🚒","🧑‍🍳","👩‍🍳",
+    "🧑‍🎨","👩‍🎨","🧑‍🏫","👩‍🏫","🧑‍⚖️","👩‍⚖️",
+    "🧙","🧙‍♀️","🧚","🧚‍♀️","🧜","🧜‍♀️","🦸","🦸‍♀️","🦹","🦹‍♀️"
+  ],
+  face: [
+    "😀","😃","😅","😂","🤣","☺️","😋","😛","😝","😜",
+    "🤪","🤨","🧑","👀","😑","😶","🤐","🫡","🤫","🫢",
+    "😯","😦","😧","😮","😲","🥱","😪","😵","🫠","🤯",
+    "😳","🥺","😢","😭","😱","😖","😣","😞","😓","😩",
+    "😫","😤","😡","🤬","👿","💀","☠️","💩","🤡","👹",
+    "👺","👻","👽","👾","🤖","😸","😹","😻","😼","😽"
+  ],
+  animal: [
+    "🐱","🐶","🐼","🐨","🦊","🐸","🐯","🦁","🐻","🐰",
+    "🐹","🐺","🦝","🐮","🐷","🐻‍❄️","🦊","🦝","🐗","🦄",
+    "🐴","🦓","🦍","🦧","🦣","🐘","🦛","🦏","🐪","🐫",
+    "🦒","🦘","🦬","🐃","🐂","🐄","🦙","🐑","🐏","🐐",
+    "🦌","🫎","🐕","🐩","🦮","🐕‍🦺","🐈","🐈‍⬛","🐓","🦃",
+    "🦤","🦚","🦜","🦢","🦩","🕊️","🐇","🦝","🦨","🦡",
+    "🦦","🦥","🐁","🐀","🐿️","🦔","🐾","🐉","🐲","🌵"
+  ],
+  nature: [
+    "🌸","🌺","🌻","🌹","🌷","💐","🌼","🪷","🌿","☘️",
+    "🍀","🍁","🍂","🍃","🪴","🌱","🌾","🎋","🎍","🍄",
+    "🐚","🪸","🌊","🌬️","🌀","🌈","⭐","🌟","✨","💫",
+    "☀️","🌤️","⛅","🌦️","🌧️","🌩️","❄️","🌨️","💧","💦",
+    "🌙","🌛","🌜","🌝","🌕","🌖","🌗","🌘","🌑","🌒",
+    "🪐","🌍","🌎","🌏","🌋","🏔️","⛰️","🗻","🏕️","🌄"
+  ],
+  food: [
+    "🍎","🍊","🍋","🍇","🍓","🫐","🍈","🍑","🍒","🥝",
+    "🍅","🫒","🥥","🥑","🍆","🥕","🌽","🌶️","🥦","🧄",
+    "🧅","🥔","🍠","🥜","🌰","🍞","🥐","🥖","🥨","🧀",
+    "🍕","🍔","🌭","🌮","🌯","🥙","🍜","🍝","🍛","🍣",
+    "🍱","🍦","🍧","🍨","🍩","🍪","🎂","🍰","🧁","🍫",
+    "🍭","🍬","🍯","🧃","🧋","☕","🍵","🧉","🥤","🍹"
+  ],
+  sport: [
+    "⚽","🏀","🏈","⚾","🎾","🏐","🏉","🥏","🎱","🏓",
+    "🏸","🥊","🥋","🥅","⛳","🎣","🤿","🎽","🎿","🛷",
+    "🥌","🏋️","🤸","🤺","🤾","🏇","🧘","🏊","🚴","🧗",
+    "🏆","🥇","🥈","🥉","🏅","🎖️","🎗️","🎯","🎮","🕹️",
+    "🎲","🧩","🪀","🪁","🃏","🀄","🎭","🎬","🎤","🎸"
+  ],
+  medical: [
+    "❤️","🧡","💛","💚","💙","💜","🖤","🤍","🤎","💗",
+    "💓","💞","💕","💖","💘","💝","❤️‍🔥","❤️‍🩹","🩺","💊",
+    "💉","🩹","🩻","🩼","🧬","🔬","🧪","🧫","⚗️","🏥",
+    "🚑","🚒","🚓","🛡️","⚕️","🩸","🦷","🦴","👁️","👃"
+  ],
+  symbol: [
+    "🌟","⭐","🌠","💥","🔥","✨","💫","🎆","🎇","🎑",
+    "🎃","🎄","🎋","🎍","🎎","🎏","🎐","🎑","🧧","🎁",
+    "🎀","🎊","🎉","🎈","🎟️","🎫","🏷️","🔑","🗝️","🔐",
+    "💎","💍","👑","💰","💵","🏦","🪙","💳","🧲","⚡",
+    "🌈","☮️","✌️","🤞","🤟","🤘","🤙","👈","👉","☝️",
+    "👍","👎","✊","👊","🤛","🤜","👏","🙌","🫶","🤝"
+  ]
+};
+
+let selectedAvatarValue = "";
+let cartoons = [];
+let currentAvatarTab = "emoji";
+
+/* --- Load cartoons: Sheets first (Drive URLs are small!), localStorage fallback --- */
+async function loadCartoons(){
+  try{
+    const d = await api({action:"getCartoons"});
+    if(d.cartoons && d.cartoons.length){
+      cartoons = d.cartoons;
+      try{ localStorage.setItem("pqCartoons", JSON.stringify(cartoons)); }catch{}
+      return;
+    }
+  }catch(e){ console.warn("Sheets unavailable, using localStorage"); }
+  try{
+    const stored = localStorage.getItem("pqCartoons");
+    cartoons = stored ? JSON.parse(stored) : [];
+  }catch{ cartoons = []; }
+}
+
+function saveCartoonsLocal(){
+  try{ localStorage.setItem("pqCartoons", JSON.stringify(cartoons)); }
+  catch(e){ console.warn("localStorage full:", e); }
+}
+
+/* --- Get/Set avatar in localStorage + Sheets --- */
+function getUserAvatar(username){
+  const cached = localStorage.getItem("pqAvatar_"+(username||""));
+  if(cached) return cached;
+  if(session && session.user && session.user.username===username && session.user.avatar)
+    return session.user.avatar;
+  return "emoji:😊";
+}
+
+function setUserAvatar(username, val){
+  localStorage.setItem("pqAvatar_"+(username||""), val);
+}
+
+/* --- Render avatar into an element --- */
+function renderAvatarEl(val, el){
+  if(!el) return;
+  el.innerHTML = "";
+  el.style.background = "linear-gradient(135deg,#4f8ef7,#34d399)";
+  el.style.fontSize = "";
+
+  const v = String(val||"emoji:😊");
+
+  if(v.startsWith("emoji:")){
+    el.style.fontSize = "inherit";
+    el.innerHTML = v.slice(6);
+  } else if(v.startsWith("cartoon:")){
+    const id = v.slice(8);
+    const ct = cartoons.find(x=>x.id===id);
+    if(ct){
+      el.innerHTML = `<img src="${ct.data}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block;"/>`;
+      el.style.background = "transparent";
+    } else {
+      el.innerHTML = "🎨";
+    }
+  } else {
+    // legacy plain emoji
+    el.innerHTML = v;
+  }
+}
+
+/* --- Update header avatar chip --- */
+function updateHeaderAvatar(){
+  if(!session) return;
+  const val = getUserAvatar(session.user.username);
+  const el = $("uAvatar");
+  if(!el) return;
+  el.style.fontSize = "20px";
+  el.style.borderRadius = "8px";
+  renderAvatarEl(val, el);
+}
+
+/* --- Open modal --- show immediately, load cartoons in background --- */
+function openChangeAvatar(){
+  closeDrop();
+  selectedAvatarValue = getUserAvatar(session.user.username);
+  // Show upload tab for admin only
+  const uploadTab = $("avTab-upload");
+  if(uploadTab) uploadTab.style.display = session.user.role==="admin" ? "flex" : "none";
+  // Open modal instantly on emoji tab (no waiting)
+  switchAvatarTab("emoji");
+  updateAvatarPreview(selectedAvatarValue);
+  openModal("modalAvatar");
+  // Load cartoons in background — update cartoon tab when ready
+  loadCartoons().then(()=>{
+    if(currentAvatarTab==="cartoon") renderCartoonGrid();
+  });
+}
+
+/* --- Switch tab --- */
+function switchAvatarTab(tab){
+  currentAvatarTab = tab;
+  ["emoji","cartoon","upload"].forEach(t=>{
+    const btn=$("avTab-"+t), pane=$("avatarTab-"+t);
+    if(btn) btn.classList.toggle("active", t===tab);
+    if(pane) pane.style.display = t===tab ? "block" : "none";
+  });
+  if(tab==="emoji")   buildAndRenderEmojiTab();
+  if(tab==="cartoon") renderCartoonGrid();
+  if(tab==="upload")  renderCartoonManage();
+}
+
+/* --- Emoji grids --- */
+const EMOJI_GROUP_LABELS = {
+  person:"👤 บุคคล / อาชีพ", face:"😊 อารมณ์ / ใบหน้า",
+  animal:"🐾 สัตว์", nature:"🌿 ธรรมชาติ",
+  food:"🍕 อาหาร / เครื่องดื่ม", sport:"⚽ กีฬา / กิจกรรม",
+  medical:"❤️ สุขภาพ / การแพทย์", symbol:"🌟 สัญลักษณ์ / อื่นๆ"
+};
+
+function buildAndRenderEmojiTab(){
+  const wrap = $("emojiTabContent"); if(!wrap) return;
+  wrap.innerHTML = Object.keys(EMOJI_GROUPS).map(group=>`
+    <div style="font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.6px;margin:14px 0 8px 0;">
+      ${EMOJI_GROUP_LABELS[group]||group}
+    </div>
+    <div class="av-grid" id="emojiGrid_${group}"></div>
+  `).join("");
+  renderEmojiGrids();
+}
+
+function renderEmojiGrids(){
+  const cur = selectedAvatarValue;
+  const groupNames = Object.keys(EMOJI_GROUPS);
+  groupNames.forEach(group=>{
+    const id = "emojiGrid_"+group;
+    const el = $(id);
+    if(!el) return;
+    el.innerHTML = EMOJI_GROUPS[group].map(em=>{
+      const val = "emoji:"+em;
+      const sel = cur===val ? "av-selected" : "";
+      return `<div class="av-item ${sel}" onclick="selectAvatar('${val}',this)">${em}</div>`;
+    }).join("");
+  });
+}
+
+/* --- Cartoon grid --- */
+function renderCartoonGrid(){
+  const grid=$("cartoonGrid"), noEl=$("noCartoon");
+  if(!cartoons.length){
+    if(grid) grid.style.display="none";
+    if(noEl) noEl.style.display="block";
+    return;
+  }
+  if(grid) grid.style.display="grid";
+  if(noEl) noEl.style.display="none";
+  const cur = selectedAvatarValue;
+  grid.innerHTML = cartoons.map(ct=>{
+    const val = "cartoon:"+ct.id;
+    const sel = cur===val ? "av-selected" : "";
+    return `<div class="av-item ${sel}" onclick="selectAvatar('${val}',this)" title="${esc(ct.name)}">
+      <img src="${ct.data}" style="width:54px;height:54px;border-radius:11px;object-fit:cover;pointer-events:none;"/>
+    </div>`;
+  }).join("");
+}
+
+/* --- Select avatar --- */
+function selectAvatar(val, el){
+  selectedAvatarValue = val;
+  document.querySelectorAll(".av-item").forEach(o=>o.classList.remove("av-selected"));
+  if(el) el.classList.add("av-selected");
+  updateAvatarPreview(val);
+}
+
+/* --- Update preview in modal header --- */
+function updateAvatarPreview(val){
+  const prev = $("avatarBigPreview");
+  const nameEl = $("avatarPreviewName");
+  if(!prev) return;
+  prev.style.fontSize = "30px";
+  renderAvatarEl(val, prev);
+  if(val.startsWith("emoji:")){
+    if(nameEl) nameEl.textContent = val.slice(6) + " (Emoji)";
+  } else if(val.startsWith("cartoon:")){
+    const ct = cartoons.find(x=>x.id===val.slice(8));
+    if(nameEl) nameEl.textContent = ct ? ct.name+" (การ์ตูน)" : "การ์ตูน";
+  } else {
+    if(nameEl) nameEl.textContent = val;
+  }
+}
+
+/* --- Save avatar --- */
+async function saveAvatar(){
+  if(!selectedAvatarValue) return;
+  setUserAvatar(session.user.username, selectedAvatarValue);
+  // Only sync non-image values to Sheets (emoji IDs are small, cartoon:id is small)
+  const syncVal = selectedAvatarValue.startsWith("cartoon:") || selectedAvatarValue.startsWith("emoji:")
+    ? selectedAvatarValue : selectedAvatarValue;
+  try{ await api({action:"setAvatar", token:session.token, avatar:syncVal}); }
+  catch(e){ console.warn("Avatar sync failed (non-critical):", e); }
+  if(session && session.user) session.user.avatar = selectedAvatarValue;
+  localStorage.setItem("pqSession", JSON.stringify(session));
+  updateHeaderAvatar();
+  closeModal("modalAvatar");
+}
+
+/* --- Google Drive cartoon management --- */
+
+// Convert Drive file ID to direct image URL
+function driveUrl(fileId){
+  return "https://drive.google.com/thumbnail?id="+fileId+"&sz=w300";
+}
+
+// Preview Drive image as user types File ID
+function previewDrive(){
+  const id = $("driveFileId").value.trim();
+  const box = $("drivePreviewBox");
+  if(!box) return;
+  if(!id){ box.innerHTML="🖼️"; box.style.borderStyle="dashed"; return; }
+  box.innerHTML=`<img src="${driveUrl(id)}" style="width:64px;height:64px;object-fit:cover;border-radius:12px;" onerror="this.parentNode.innerHTML='❌';$('driveErrMsg').style.display='block';$('driveErrMsg').textContent='โหลดรูปไม่ได้ ตรวจสอบ File ID และ sharing settings';" onload="$('driveErrMsg').style.display='none';"/>`;
+  box.style.borderStyle="solid";
+}
+
+async function saveCartoon(){
+  const fileId = $("driveFileId").value.trim();
+  const name   = $("cartoonName").value.trim();
+  const errEl  = $("driveErrMsg");
+
+  if(!fileId){ errEl.textContent="กรุณาใส่ Google Drive File ID"; errEl.style.display="block"; return; }
+  if(!name)  { errEl.textContent="กรุณาใส่ชื่อการ์ตูน"; errEl.style.display="block"; return; }
+
+  const saveBtn = document.querySelector("#avatarTab-upload button[onclick='saveCartoon()']");
+  if(saveBtn){ saveBtn.disabled=true; saveBtn.textContent="กำลังบันทึก..."; }
+
+  const id   = "ct_" + Date.now();
+  const data = driveUrl(fileId); // store URL not base64
+
+  await loadCartoons();
+  cartoons.push({id, name, data, fileId});
+  saveCartoonsLocal();
+  // Drive URL is tiny — sync to Sheets so ALL users see it
+  try{ await api({action:"addCartoon", token:session.token, name, data}); }
+  catch(e){ console.warn("Sheets sync failed:", e); }
+
+  // Clear form
+  $("driveFileId").value = "";
+  $("cartoonName").value = "";
+  $("drivePreviewBox").innerHTML = "🖼️";
+  if(errEl) errEl.style.display="none";
+
+  renderCartoonManage();
+  switchAvatarTab("cartoon");
+  if(saveBtn){ saveBtn.disabled=false; saveBtn.textContent="+ เพิ่มการ์ตูนเข้าระบบ"; }
+}
+
+async function deleteCartoon(id){
+  if(!confirm("ลบการ์ตูนนี้ออกจากระบบ?")) return;
+  await loadCartoons();
+  cartoons = cartoons.filter(x => x.id !== id);
+  saveCartoonsLocal();
+  renderCartoonManage();
+  renderCartoonGrid();
+}
+
+function renderCartoonManage(){
+  const el = $("cartoonManageList"); if(!el) return;
+  if(!cartoons.length){ el.innerHTML=""; return; }
+  el.innerHTML = `<div style="font-size:12px;font-weight:700;color:var(--tx3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;">จัดการการ์ตูนในระบบ (${cartoons.length})</div>`
+    + cartoons.map(ct=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg);border-radius:10px;border:1px solid var(--border);margin-bottom:6px;">
+      <img src="${ct.data}" style="width:36px;height:36px;border-radius:8px;object-fit:cover;flex-shrink:0;"/>
+      <div style="flex:1;font-size:13px;font-weight:600;">${esc(ct.name)}</div>
+      <button class="btn btn-danger btn-sm" onclick="deleteCartoon('${ct.id}')">🗑️</button>
+    </div>`).join("");
+}
+
+
+/* ===== RESTORE SESSION ===== */
+(function(){
+  // ตรวจสอบว่าตั้งค่า URL แล้วหรือยัง
+  if(!APPS_SCRIPT_URL || APPS_SCRIPT_URL === "YOUR_APPS_SCRIPT_URL_HERE"){
+    const warn = document.createElement("div");
+    warn.style.cssText = "position:fixed;top:0;left:0;right:0;background:#d97706;color:#fff;text-align:center;padding:10px 16px;font-size:14px;z-index:99999;font-family:Sarabun,sans-serif;";
+    warn.innerHTML = "⚠️ กรุณาตั้งค่า <strong>APPS_SCRIPT_URL</strong> ในไฟล์ index.html (บรรทัดแรกของ &lt;script&gt;) ก่อนใช้งาน";
+    document.body.appendChild(warn);
+    return;
+  }
+  const s=localStorage.getItem("pqSession");
+  if(s){try{session=JSON.parse(s);initApp();}catch{localStorage.removeItem("pqSession");}}
+})();
+</script>
+</body>
+</html>
