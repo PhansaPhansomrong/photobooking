@@ -224,10 +224,48 @@ textarea{resize:vertical;min-height:80px;}
     <div class="login-title">PhotoQ</div>
     <div class="login-sub">ระบบจองคิวถ่ายรูป โรงพยาบาลวังน้ำเย็น</div>
     <div class="login-line"></div>
-    <div class="fg"><label>ชื่อผู้ใช้</label><input type="text" id="l-user" placeholder="username" autocomplete="username"/></div>
-    <div class="fg"><label>รหัสผ่าน</label><input type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-    <button class="btn btn-primary btn-block" id="loginBtn" onclick="doLogin()">เข้าสู่ระบบ</button>
-    <div class="alert error" id="loginErr" style="margin-top:12px;"></div>
+    <div id="loginForm">
+      <div class="fg"><label>ชื่อผู้ใช้</label><input type="text" id="l-user" placeholder="username" autocomplete="username"/></div>
+      <div class="fg"><label>รหัสผ่าน</label><input type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+      <button class="btn btn-primary btn-block" id="loginBtn" onclick="doLogin()">เข้าสู่ระบบ</button>
+      <div class="alert error" id="loginErr" style="margin-top:12px;"></div>
+      <div style="text-align:center;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);">
+        <span style="font-size:13px;color:rgba(255,255,255,.35);">ยังไม่มีบัญชี?</span>
+        <button onclick="showRegister()" style="background:none;border:none;color:#4f8ef7;font-size:13px;font-weight:600;cursor:pointer;margin-left:6px;font-family:'Sarabun',sans-serif;text-decoration:underline;">สมัครบัญชีใหม่</button>
+      </div>
+    </div>
+    <div id="registerForm" style="display:none;">
+      <div style="font-size:16px;font-weight:700;color:var(--tx);margin-bottom:4px;">สมัครบัญชีใหม่</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.4);margin-bottom:16px;">โรงพยาบาลวังน้ำเย็น</div>
+      <div class="fg"><label>ชื่อ-นามสกุล <span class="req">*</span></label><input type="text" id="r-name" placeholder="เช่น นายสมชาย ใจดี"/></div>
+      <div class="fg"><label>กลุ่มงาน <span class="req">*</span></label>
+        <select id="r-dept">
+          <option value="">— เลือกกลุ่มงาน —</option>
+          <option>กลุ่มงานการพยาบาล</option>
+          <option>กลุ่มงานการแพทย์</option>
+          <option>กลุ่มงานทันตกรรม</option>
+          <option>กลุ่มงานจิตเวชและยาเสพติด</option>
+          <option>กลุ่มงานบริการด้านปฐมภูมิและองค์รวม</option>
+          <option>กลุ่มงานบริหารทั่วไป</option>
+          <option>กลุ่มงานประกันสุขภาพยุทธศาสตร์</option>
+          <option>กลุ่มงานแพทย์แผนไทยและแพทย์ทางเลือก</option>
+          <option>กลุ่มงานแพทย์แผนไทยและแพทย์ทางเลือก รายคาบ</option>
+          <option>กลุ่มงานเภสัชกรรมและคุ้มครองผู้บริโภค</option>
+          <option>กลุ่มงานเทคนิคการแพทย์</option>
+          <option>กลุ่มงานเวชกรรมฟื้นฟู</option>
+          <option>กลุ่มงานสุขภาพดิจิทัล</option>
+        </select>
+      </div>
+      <div class="fg"><label>Username <span class="req">*</span></label><input type="text" id="r-user" placeholder="สำหรับใช้ login"/></div>
+      <div class="fg"><label>รหัสผ่าน <span class="req">*</span></label><input type="password" id="r-pass" placeholder="อย่างน้อย 6 ตัวอักษร"/></div>
+      <div class="fg"><label>ยืนยันรหัสผ่าน <span class="req">*</span></label><input type="password" id="r-pass2" placeholder="กรอกซ้ำอีกครั้ง" onkeydown="if(event.key==='Enter')doRegister()"/></div>
+      <button class="btn btn-primary btn-block" id="registerBtn" onclick="doRegister()">สมัครบัญชี</button>
+      <div class="alert error" id="registerErr" style="margin-top:12px;"></div>
+      <div class="alert success" id="registerOk" style="margin-top:12px;"></div>
+      <div style="text-align:center;margin-top:14px;">
+        <button onclick="showLogin()" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:13px;cursor:pointer;font-family:'Sarabun',sans-serif;">← กลับหน้า login</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1642,6 +1680,35 @@ function renderCartoonManage(){
     </div>`).join("");
 }
 
+
+/* ===== REGISTER ===== */
+function showRegister(){
+  $("loginForm").style.display="none";
+  $("registerForm").style.display="block";
+  hideAlert("registerErr");hideAlert("registerOk");
+}
+function showLogin(){
+  $("registerForm").style.display="none";
+  $("loginForm").style.display="block";
+  hideAlert("loginErr");
+}
+async function doRegister(){
+  const name=$("r-name").value.trim(),dept=$("r-dept").value;
+  const user=$("r-user").value.trim(),pass=$("r-pass").value,pass2=$("r-pass2").value;
+  hideAlert("registerErr");hideAlert("registerOk");
+  if(!name||!dept||!user||!pass||!pass2)return showAlert("registerErr","กรุณากรอกข้อมูลให้ครบทุกช่อง","error");
+  if(pass.length<6)return showAlert("registerErr","รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร","error");
+  if(pass!==pass2)return showAlert("registerErr","รหัสผ่านไม่ตรงกัน","error");
+  const btn=$("registerBtn");btn.disabled=true;btn.textContent="กำลังสมัคร...";
+  try{
+    const d=await api({action:"register",username:user,password:pass,name,department:dept});
+    if(d.success){
+      showAlert("registerOk","✅ สมัครบัญชีสำเร็จ! กรุณา Login","success");
+      setTimeout(()=>{showLogin();$("l-user").value=user;},2000);
+    }else showAlert("registerErr",d.error||"เกิดข้อผิดพลาด","error");
+  }catch{showAlert("registerErr","ไม่สามารถเชื่อมต่อได้","error");}
+  btn.disabled=false;btn.textContent="สมัครบัญชี";
+}
 
 /* ===== RESTORE SESSION ===== */
 (function(){
